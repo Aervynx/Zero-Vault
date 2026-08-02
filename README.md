@@ -87,18 +87,18 @@ ZeroVault-Treasury-Protocol/
                                 │
                                 └── test/
                                       EmergencyPauseMock.sol
-                                
+
                                 scripts/
-                                
+
                                 test/
                                 │
                                 ├── EmergencyPause.test.ts
                                 ├── RoleManager.test.ts
                                 ├── Timelock.test.ts
                                 └── TreasuryIntegration.test.ts
-                                
+
                                 hardhat.config.ts
-                                
+
                                 package.json
 
 ## Technology Stack
@@ -161,13 +161,13 @@ ZeroVault-Treasury-Protocol/
 
 ## Future ZeroVault Ecosystem
 ZeroVault
-│
-├── Treasury Protocol
-├── Governance
-├── SDK
-├── Analytics
-├── Documentation
-└── Token
+                                │
+                                ├── Treasury Protocol
+                                ├── Governance
+                                ├── SDK
+                                ├── Analytics
+                                ├── Documentation
+                                └── Token
 
 ## Deployment
 
