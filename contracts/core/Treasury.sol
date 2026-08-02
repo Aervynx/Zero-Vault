@@ -1,31 +1,48 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
-import "./TreasuryVault.sol";
+import "../security/EmergencyPause.sol";
 import "../access/RoleManager.sol";
+import "./TreasuryVault.sol";
 
-contract Treasury {
+contract Treasury is EmergencyPause {
     TreasuryVault public immutable vault;
-    RoleManager public immutable roleManager;
+    address public immutable timelock;
 
     event Withdrawn(address indexed target, uint256 amount);
+    event Deposited(address indexed sender, uint256 amount);
 
     error Treasury__Unauthorized();
     error Treasury__TransferFailed();
+    error Treasury__InvalidTimelock();
+    error Treasury__ZeroDeposit();
 
-    constructor(address _vault, address _roleManager) {
-        vault = TreasuryVault(payable(_vault));
-        roleManager = RoleManager(_roleManager);
+    modifier onlyTimelock() {
+        if (msg.sender != timelock) revert Treasury__Unauthorized();
+        _;
     }
 
-    function withdraw(address payable _to, uint256 _amount) external {
-        if (!roleManager.hasRole(roleManager.OPERATOR_ROLE(), msg.sender)) {
-            revert Treasury__Unauthorized();
-        }
+    constructor(
+        address _vault, 
+        address _roleManager, 
+        address _timelock
+    ) EmergencyPause(_roleManager) {
+        if (_timelock == address(0)) revert Treasury__InvalidTimelock();
+        vault = TreasuryVault(payable(_vault));
+        timelock = _timelock;
+    }
 
+    function deposit() external payable {
+        if (msg.value == 0) revert Treasury__ZeroDeposit();
+        emit Deposited(msg.sender, msg.value);
+    }
+
+    function withdraw(address payable _to, uint256 _amount) external onlyTimelock whenNotPaused {
         vault.transferETH(_to, _amount);
         emit Withdrawn(_to, _amount);
     }
 
-    receive() external payable {}
+    receive() external payable {
+        emit Deposited(msg.sender, msg.value);
+    }
 }

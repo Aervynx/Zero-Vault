@@ -41,6 +41,18 @@ declare module "hardhat/types/runtime" {
       name: "TreasuryVault",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TreasuryVault__factory>;
+    getContractFactory(
+      name: "EmergencyPause",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.EmergencyPause__factory>;
+    getContractFactory(
+      name: "Timelock",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.Timelock__factory>;
+    getContractFactory(
+      name: "EmergencyPauseMock",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.EmergencyPauseMock__factory>;
 
     getContractAt(
       name: "AccessControl",
@@ -77,6 +89,21 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.TreasuryVault>;
+    getContractAt(
+      name: "EmergencyPause",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.EmergencyPause>;
+    getContractAt(
+      name: "Timelock",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.Timelock>;
+    getContractAt(
+      name: "EmergencyPauseMock",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.EmergencyPauseMock>;
 
     deployContract(
       name: "AccessControl",
@@ -106,6 +133,18 @@ declare module "hardhat/types/runtime" {
       name: "TreasuryVault",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TreasuryVault>;
+    deployContract(
+      name: "EmergencyPause",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EmergencyPause>;
+    deployContract(
+      name: "Timelock",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Timelock>;
+    deployContract(
+      name: "EmergencyPauseMock",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EmergencyPauseMock>;
 
     deployContract(
       name: "AccessControl",
@@ -142,6 +181,21 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TreasuryVault>;
+    deployContract(
+      name: "EmergencyPause",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EmergencyPause>;
+    deployContract(
+      name: "Timelock",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Timelock>;
+    deployContract(
+      name: "EmergencyPauseMock",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.EmergencyPauseMock>;
 
     // default types
     getContractFactory(

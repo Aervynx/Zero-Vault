@@ -14,7 +14,7 @@
 /cache
 
 # Typechain output
-/types
+/typechain-types
 
 # Environment files
 .env
