@@ -44,62 +44,62 @@ Pull Payment pattern
 Principle of Least Privilege
 
 ## Architecture :
-+----------------+
-                     | Role Manager   |
-                     +-------+--------+
-                             |
-                             |
-                 Permission Validation
-                             |
-                             ▼
+                                +----------------+
+                                                     | Role Manager   |
+                                                     +-------+--------+
+                                                             |
+                                                             |
+                                                 Permission Validation
+                                                             |
+                                                             ▼
 
-+-------------+     +------------------+      +----------------+
-|  Timelock   | --->| Treasury.sol     | ---> | TreasuryVault  |
-+-------------+     +------------------+      +----------------+
-        |                   |
-        |                   |
-        |                   ▼
-        |            Accounting Logic
-        |
-        ▼
-Delayed Execution
+                                +-------------+     +------------------+      +----------------+
+                                |  Timelock   | --->| Treasury.sol     | ---> | TreasuryVault  |
+                                +-------------+     +------------------+      +----------------+
+                                        |                   |
+                                        |                   |
+                                        |                   ▼
+                                        |            Accounting Logic
+                                        |
+                                        ▼
+                                Delayed Execution
 
-+--------------------+
-| Emergency Pause    |
-+--------------------+
+                                +--------------------+
+                                | Emergency Pause    |
+                                +--------------------+
 
 ## Project Structure:
 
 ZeroVault-Treasury-Protocol/
 
-contracts/
-│
-├── access/
-│     RoleManager.sol
-│
-├── core/
-│     Treasury.sol
-│     TreasuryVault.sol
-│
-├── security/
-│     Timelock.sol
-│     EmergencyPause.sol
-│
-└── test/
-      EmergencyPauseMock.sol
-
-scripts/
-
-test/
-│
-├── EmergencyPause.test.ts
-├── RoleManager.test.ts
-├── Timelock.test.ts
-└── TreasuryIntegration.test.ts
-
-hardhat.config.ts
-
-package.json
+                                contracts/
+                                │
+                                ├── access/
+                                │     RoleManager.sol
+                                │
+                                ├── core/
+                                │     Treasury.sol
+                                │     TreasuryVault.sol
+                                │
+                                ├── security/
+                                │     Timelock.sol
+                                │     EmergencyPause.sol
+                                │
+                                └── test/
+                                      EmergencyPauseMock.sol
+                                
+                                scripts/
+                                
+                                test/
+                                │
+                                ├── EmergencyPause.test.ts
+                                ├── RoleManager.test.ts
+                                ├── Timelock.test.ts
+                                └── TreasuryIntegration.test.ts
+                                
+                                hardhat.config.ts
+                                
+                                package.json
 
 ## Technology Stack
                 Solidity
