@@ -177,5 +177,6 @@ Deployment is handled through the scripts located in the scripts/ directory. Aft
 
 The project supports local development, Ethereum testnets, and production deployments.
 
-License
+## License
+
 MIT License
