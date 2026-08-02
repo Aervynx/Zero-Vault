@@ -160,7 +160,7 @@ ZeroVault-Treasury-Protocol/
                 Security Before Convenience
 
 ## Future ZeroVault Ecosystem
-ZeroVault
+                                ZeroVault
                                 │
                                 ├── Treasury Protocol
                                 ├── Governance
