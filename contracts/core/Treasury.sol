@@ -17,6 +17,7 @@ contract Treasury is EmergencyPause {
     error Treasury__InvalidTimelock();
     error Treasury__ZeroDeposit();
     error Treasury__ZeroAddress();
+    error Treasury__TransferFailed();
 
     modifier onlyTimelock() {
         if (msg.sender != timelock) revert Treasury__Unauthorized();
@@ -35,6 +36,8 @@ contract Treasury is EmergencyPause {
 
     function deposit() external payable {
         if (msg.value == 0) revert Treasury__ZeroDeposit();
+        (bool success, ) = payable(address(vault)).call{value: msg.value}("");
+        if (!success) revert Treasury__TransferFailed();
         emit Deposited(msg.sender, msg.value);
     }
 
@@ -51,6 +54,10 @@ contract Treasury is EmergencyPause {
     }
 
     receive() external payable {
-        emit Deposited(msg.sender, msg.value);
+        if (msg.value > 0) {
+            (bool success, ) = payable(address(vault)).call{value: msg.value}("");
+            if (!success) revert Treasury__TransferFailed();
+            emit Deposited(msg.sender, msg.value);
+        }
     }
 }

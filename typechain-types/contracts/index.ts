@@ -5,6 +5,8 @@ import type * as access from "./access";
 export type { access };
 import type * as core from "./core";
 export type { core };
+import type * as governance from "./governance";
+export type { governance };
 import type * as security from "./security";
 export type { security };
 import type * as test from "./test";
