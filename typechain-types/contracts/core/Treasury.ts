@@ -34,10 +34,16 @@ export interface TreasuryInterface extends Interface {
       | "unpause"
       | "vault"
       | "withdraw"
+      | "withdrawERC20"
   ): FunctionFragment;
 
   getEvent(
-    nameOrSignatureOrTopic: "Deposited" | "Paused" | "Unpaused" | "Withdrawn"
+    nameOrSignatureOrTopic:
+      | "Deposited"
+      | "ERC20Withdrawn"
+      | "Paused"
+      | "Unpaused"
+      | "Withdrawn"
   ): EventFragment;
 
   encodeFunctionData(functionFragment: "deposit", values?: undefined): string;
@@ -54,6 +60,10 @@ export interface TreasuryInterface extends Interface {
     functionFragment: "withdraw",
     values: [AddressLike, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawERC20",
+    values: [AddressLike, AddressLike, BigNumberish]
+  ): string;
 
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
@@ -66,6 +76,10 @@ export interface TreasuryInterface extends Interface {
   decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "vault", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawERC20",
+    data: BytesLike
+  ): Result;
 }
 
 export namespace DepositedEvent {
@@ -73,6 +87,24 @@ export namespace DepositedEvent {
   export type OutputTuple = [sender: string, amount: bigint];
   export interface OutputObject {
     sender: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC20WithdrawnEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    target: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [token: string, target: string, amount: bigint];
+  export interface OutputObject {
+    token: string;
+    target: string;
     amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
@@ -181,6 +213,12 @@ export interface Treasury extends BaseContract {
     "nonpayable"
   >;
 
+  withdrawERC20: TypedContractMethod<
+    [_token: AddressLike, _to: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
@@ -213,6 +251,13 @@ export interface Treasury extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "withdrawERC20"
+  ): TypedContractMethod<
+    [_token: AddressLike, _to: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
   getEvent(
     key: "Deposited"
@@ -220,6 +265,13 @@ export interface Treasury extends BaseContract {
     DepositedEvent.InputTuple,
     DepositedEvent.OutputTuple,
     DepositedEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC20Withdrawn"
+  ): TypedContractEvent<
+    ERC20WithdrawnEvent.InputTuple,
+    ERC20WithdrawnEvent.OutputTuple,
+    ERC20WithdrawnEvent.OutputObject
   >;
   getEvent(
     key: "Paused"
@@ -253,6 +305,17 @@ export interface Treasury extends BaseContract {
       DepositedEvent.InputTuple,
       DepositedEvent.OutputTuple,
       DepositedEvent.OutputObject
+    >;
+
+    "ERC20Withdrawn(address,address,uint256)": TypedContractEvent<
+      ERC20WithdrawnEvent.InputTuple,
+      ERC20WithdrawnEvent.OutputTuple,
+      ERC20WithdrawnEvent.OutputObject
+    >;
+    ERC20Withdrawn: TypedContractEvent<
+      ERC20WithdrawnEvent.InputTuple,
+      ERC20WithdrawnEvent.OutputTuple,
+      ERC20WithdrawnEvent.OutputObject
     >;
 
     "Paused(address)": TypedContractEvent<

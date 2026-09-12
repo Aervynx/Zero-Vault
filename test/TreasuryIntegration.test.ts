@@ -32,14 +32,15 @@ describe("Treasury Integration & End-to-End Workflow", function () {
 
         // 3. Deploy TreasuryVault
         const TreasuryVaultFactory = await ethers.getContractFactory("TreasuryVault");
-        vault = (await TreasuryVaultFactory.deploy(owner.address)) as unknown as TreasuryVault;
+        vault = (await TreasuryVaultFactory.deploy(await timelock.getAddress())) as unknown as TreasuryVault;
         await vault.waitForDeployment();
 
         // 4. Deploy Treasury
         const TreasuryFactory = await ethers.getContractFactory("Treasury");
         treasury = (await TreasuryFactory.deploy(
             await vault.getAddress(),
-            await roleManager.getAddress()
+            await roleManager.getAddress(),
+            await timelock.getAddress()
         )) as unknown as Treasury;
         await treasury.waitForDeployment();
     });

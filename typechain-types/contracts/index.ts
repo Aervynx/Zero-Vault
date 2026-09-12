@@ -9,3 +9,5 @@ import type * as security from "./security";
 export type { security };
 import type * as test from "./test";
 export type { test };
+import type * as token from "./token";
+export type { token };

@@ -10,12 +10,13 @@ contract Treasury is EmergencyPause {
     address public immutable timelock;
 
     event Withdrawn(address indexed target, uint256 amount);
+    event ERC20Withdrawn(address indexed token, address indexed target, uint256 amount);
     event Deposited(address indexed sender, uint256 amount);
 
     error Treasury__Unauthorized();
-    error Treasury__TransferFailed();
     error Treasury__InvalidTimelock();
     error Treasury__ZeroDeposit();
+    error Treasury__ZeroAddress();
 
     modifier onlyTimelock() {
         if (msg.sender != timelock) revert Treasury__Unauthorized();
@@ -23,8 +24,8 @@ contract Treasury is EmergencyPause {
     }
 
     constructor(
-        address _vault, 
-        address _roleManager, 
+        address _vault,
+        address _roleManager,
         address _timelock
     ) EmergencyPause(_roleManager) {
         if (_timelock == address(0)) revert Treasury__InvalidTimelock();
@@ -38,8 +39,15 @@ contract Treasury is EmergencyPause {
     }
 
     function withdraw(address payable _to, uint256 _amount) external onlyTimelock whenNotPaused {
+        if (_to == address(0)) revert Treasury__ZeroAddress();
         vault.transferETH(_to, _amount);
         emit Withdrawn(_to, _amount);
+    }
+
+    function withdrawERC20(address _token, address _to, uint256 _amount) external onlyTimelock whenNotPaused {
+        if (_token == address(0) || _to == address(0)) revert Treasury__ZeroAddress();
+        vault.transferERC20(_token, _to, _amount);
+        emit ERC20Withdrawn(_token, _to, _amount);
     }
 
     receive() external payable {

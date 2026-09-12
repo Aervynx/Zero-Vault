@@ -25,11 +25,19 @@ import type {
 
 export interface TreasuryVaultInterface extends Interface {
   getFunction(
-    nameOrSignature: "CONTROLLER" | "getBalance" | "transferETH"
+    nameOrSignature:
+      | "CONTROLLER"
+      | "getBalance"
+      | "getERC20Balance"
+      | "transferERC20"
+      | "transferETH"
   ): FunctionFragment;
 
   getEvent(
-    nameOrSignatureOrTopic: "FundsDeposited" | "FundsWithdrawn"
+    nameOrSignatureOrTopic:
+      | "ERC20FundsWithdrawn"
+      | "FundsDeposited"
+      | "FundsWithdrawn"
   ): EventFragment;
 
   encodeFunctionData(
@@ -41,6 +49,14 @@ export interface TreasuryVaultInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "getERC20Balance",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferERC20",
+    values: [AddressLike, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferETH",
     values: [AddressLike, BigNumberish]
   ): string;
@@ -48,9 +64,35 @@ export interface TreasuryVaultInterface extends Interface {
   decodeFunctionResult(functionFragment: "CONTROLLER", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "getBalance", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "getERC20Balance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferERC20",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferETH",
     data: BytesLike
   ): Result;
+}
+
+export namespace ERC20FundsWithdrawnEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    target: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [token: string, target: string, amount: bigint];
+  export interface OutputObject {
+    token: string;
+    target: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace FundsDepositedEvent {
@@ -126,6 +168,14 @@ export interface TreasuryVault extends BaseContract {
 
   getBalance: TypedContractMethod<[], [bigint], "view">;
 
+  getERC20Balance: TypedContractMethod<[_token: AddressLike], [bigint], "view">;
+
+  transferERC20: TypedContractMethod<
+    [_token: AddressLike, _to: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   transferETH: TypedContractMethod<
     [_to: AddressLike, _amount: BigNumberish],
     [void],
@@ -143,6 +193,16 @@ export interface TreasuryVault extends BaseContract {
     nameOrSignature: "getBalance"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
+    nameOrSignature: "getERC20Balance"
+  ): TypedContractMethod<[_token: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "transferERC20"
+  ): TypedContractMethod<
+    [_token: AddressLike, _to: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "transferETH"
   ): TypedContractMethod<
     [_to: AddressLike, _amount: BigNumberish],
@@ -150,6 +210,13 @@ export interface TreasuryVault extends BaseContract {
     "nonpayable"
   >;
 
+  getEvent(
+    key: "ERC20FundsWithdrawn"
+  ): TypedContractEvent<
+    ERC20FundsWithdrawnEvent.InputTuple,
+    ERC20FundsWithdrawnEvent.OutputTuple,
+    ERC20FundsWithdrawnEvent.OutputObject
+  >;
   getEvent(
     key: "FundsDeposited"
   ): TypedContractEvent<
@@ -166,6 +233,17 @@ export interface TreasuryVault extends BaseContract {
   >;
 
   filters: {
+    "ERC20FundsWithdrawn(address,address,uint256)": TypedContractEvent<
+      ERC20FundsWithdrawnEvent.InputTuple,
+      ERC20FundsWithdrawnEvent.OutputTuple,
+      ERC20FundsWithdrawnEvent.OutputObject
+    >;
+    ERC20FundsWithdrawn: TypedContractEvent<
+      ERC20FundsWithdrawnEvent.InputTuple,
+      ERC20FundsWithdrawnEvent.OutputTuple,
+      ERC20FundsWithdrawnEvent.OutputObject
+    >;
+
     "FundsDeposited(address,uint256)": TypedContractEvent<
       FundsDepositedEvent.InputTuple,
       FundsDepositedEvent.OutputTuple,
