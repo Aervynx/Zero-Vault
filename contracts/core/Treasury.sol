@@ -9,6 +9,7 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../access/RoleManager.sol";
 import "../security/EmergencyPause.sol";
 import "../security/AssetRegistry.sol";
+import "../security/BudgetController.sol";
 import "./TreasuryVault.sol";
 
 /**
@@ -40,9 +41,12 @@ contract Treasury is ReentrancyGuard {
     EmergencyPause public immutable emergencyPause;
     address public immutable timelock;
 
+    BudgetController public budgetController;
+
     uint256 public nextRequestId = 1;
     mapping(uint256 => WithdrawalRequest) public withdrawalRequests;
 
+    event BudgetControllerUpdated(address indexed budgetController);
     event Deposited(address indexed sender, uint256 amount);
     event ERC20Deposited(address indexed token, address indexed sender, uint256 amount);
     event ERC721Deposited(address indexed token, address indexed sender, uint256 indexed tokenId);
@@ -105,6 +109,16 @@ contract Treasury is ReentrancyGuard {
         timelock = _timelock;
     }
 
+    /**
+     * @notice Attaches the BudgetController for rolling epoch spending caps. Admin only.
+     */
+    function setBudgetController(address _budgetController) external {
+        if (!roleManager.isAdmin(msg.sender)) revert Treasury__Unauthorized();
+        if (_budgetController == address(0)) revert Treasury__ZeroAddress();
+        budgetController = BudgetController(_budgetController);
+        emit BudgetControllerUpdated(_budgetController);
+    }
+
     function paused() external view returns (bool) {
         return emergencyPause.paused();
     }
@@ -135,7 +149,6 @@ contract Treasury is ReentrancyGuard {
 
     function depositERC721(address _token, uint256 _tokenId) external nonReentrant {
         if (_token == address(0)) revert Treasury__ZeroAddress();
-        // Triggers TreasuryVault.onERC721Received which enforces AssetRegistry vetting
         IERC721(_token).safeTransferFrom(msg.sender, address(vault), _tokenId);
         emit ERC721Deposited(_token, msg.sender, _tokenId);
     }
@@ -143,7 +156,6 @@ contract Treasury is ReentrancyGuard {
     function depositERC1155(address _token, uint256 _id, uint256 _amount) external nonReentrant {
         if (_token == address(0)) revert Treasury__ZeroAddress();
         if (_amount == 0) revert Treasury__ZeroAmount();
-        // Triggers TreasuryVault.onERC1155Received which enforces AssetRegistry vetting
         IERC1155(_token).safeTransferFrom(msg.sender, address(vault), _id, _amount, "");
         emit ERC1155Deposited(_token, msg.sender, _id, _amount);
     }
@@ -157,6 +169,9 @@ contract Treasury is ReentrancyGuard {
         if (_to == address(0)) revert Treasury__ZeroAddress();
         if (_amount == 0) revert Treasury__ZeroAmount();
         if (vault.getBalance() < _amount) revert Treasury__InsufficientBalance();
+        if (address(budgetController) != address(0)) {
+            budgetController.previewConsume(address(0), _amount);
+        }
 
         requestId = _registerRequest(address(0), _to, _amount, _reason);
     }
@@ -175,6 +190,9 @@ contract Treasury is ReentrancyGuard {
         AssetRegistry registry = vault.assetRegistry();
         if (address(registry) != address(0)) {
             registry.validateWithdrawal(_token, AssetRegistry.AssetType.ERC20, _amount);
+        }
+        if (address(budgetController) != address(0)) {
+            budgetController.previewConsume(_token, _amount);
         }
 
         requestId = _registerRequest(_token, _to, _amount, _reason);
@@ -199,6 +217,9 @@ contract Treasury is ReentrancyGuard {
         if (req.status != RequestStatus.Pending) revert Treasury__InvalidRequestState(req.status);
 
         req.status = RequestStatus.Executed;
+        if (address(budgetController) != address(0)) {
+            budgetController.consumeBudget(req.asset, req.amount);
+        }
 
         if (req.asset == address(0)) {
             vault.transferETH(payable(req.to), req.amount);
@@ -217,6 +238,9 @@ contract Treasury is ReentrancyGuard {
     ) external onlyTimelock whenNotPaused nonReentrant {
         if (_to == address(0)) revert Treasury__ZeroAddress();
         if (_amount == 0) revert Treasury__ZeroAmount();
+        if (address(budgetController) != address(0)) {
+            budgetController.consumeBudget(address(0), _amount);
+        }
         vault.transferETH(_to, _amount);
         emit Withdrawn(_to, _amount);
     }
@@ -228,6 +252,9 @@ contract Treasury is ReentrancyGuard {
     ) external onlyTimelock whenNotPaused nonReentrant {
         if (_token == address(0) || _to == address(0)) revert Treasury__ZeroAddress();
         if (_amount == 0) revert Treasury__ZeroAmount();
+        if (address(budgetController) != address(0)) {
+            budgetController.consumeBudget(_token, _amount);
+        }
         vault.transferERC20(_token, _to, _amount);
         emit ERC20Withdrawn(_token, _to, _amount);
     }

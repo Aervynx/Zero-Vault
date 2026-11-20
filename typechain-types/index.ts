@@ -126,6 +126,8 @@ export type { ZeroVaultGovernor } from "./contracts/governance/ZeroVaultGovernor
 export { ZeroVaultGovernor__factory } from "./factories/contracts/governance/ZeroVaultGovernor__factory";
 export type { AssetRegistry } from "./contracts/security/AssetRegistry";
 export { AssetRegistry__factory } from "./factories/contracts/security/AssetRegistry__factory";
+export type { BudgetController } from "./contracts/security/BudgetController";
+export { BudgetController__factory } from "./factories/contracts/security/BudgetController__factory";
 export type { EmergencyPause } from "./contracts/security/EmergencyPause";
 export { EmergencyPause__factory } from "./factories/contracts/security/EmergencyPause__factory";
 export type { Timelock } from "./contracts/security/Timelock";

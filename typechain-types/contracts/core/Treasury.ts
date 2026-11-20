@@ -26,6 +26,7 @@ import type {
 export interface TreasuryInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "budgetController"
       | "cancelWithdrawalRequest"
       | "deposit"
       | "depositERC1155"
@@ -38,6 +39,7 @@ export interface TreasuryInterface extends Interface {
       | "requestERC20Withdrawal"
       | "requestETHWithdrawal"
       | "roleManager"
+      | "setBudgetController"
       | "timelock"
       | "vault"
       | "withdraw"
@@ -49,6 +51,7 @@ export interface TreasuryInterface extends Interface {
 
   getEvent(
     nameOrSignatureOrTopic:
+      | "BudgetControllerUpdated"
       | "Deposited"
       | "ERC1155Deposited"
       | "ERC1155Withdrawn"
@@ -62,6 +65,10 @@ export interface TreasuryInterface extends Interface {
       | "Withdrawn"
   ): EventFragment;
 
+  encodeFunctionData(
+    functionFragment: "budgetController",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "cancelWithdrawalRequest",
     values: [BigNumberish]
@@ -104,6 +111,10 @@ export interface TreasuryInterface extends Interface {
     functionFragment: "roleManager",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "setBudgetController",
+    values: [AddressLike]
+  ): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(functionFragment: "vault", values?: undefined): string;
   encodeFunctionData(
@@ -127,6 +138,10 @@ export interface TreasuryInterface extends Interface {
     values: [BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "budgetController",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "cancelWithdrawalRequest",
     data: BytesLike
@@ -169,6 +184,10 @@ export interface TreasuryInterface extends Interface {
     functionFragment: "roleManager",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "setBudgetController",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "vault", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
@@ -188,6 +207,18 @@ export interface TreasuryInterface extends Interface {
     functionFragment: "withdrawalRequests",
     data: BytesLike
   ): Result;
+}
+
+export namespace BudgetControllerUpdatedEvent {
+  export type InputTuple = [budgetController: AddressLike];
+  export type OutputTuple = [budgetController: string];
+  export interface OutputObject {
+    budgetController: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace DepositedEvent {
@@ -450,6 +481,8 @@ export interface Treasury extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  budgetController: TypedContractMethod<[], [string], "view">;
+
   cancelWithdrawalRequest: TypedContractMethod<
     [_requestId: BigNumberish],
     [void],
@@ -507,6 +540,12 @@ export interface Treasury extends BaseContract {
 
   roleManager: TypedContractMethod<[], [string], "view">;
 
+  setBudgetController: TypedContractMethod<
+    [_budgetController: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
   timelock: TypedContractMethod<[], [string], "view">;
 
   vault: TypedContractMethod<[], [string], "view">;
@@ -559,6 +598,9 @@ export interface Treasury extends BaseContract {
     key: string | FunctionFragment
   ): T;
 
+  getFunction(
+    nameOrSignature: "budgetController"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "cancelWithdrawalRequest"
   ): TypedContractMethod<[_requestId: BigNumberish], [void], "nonpayable">;
@@ -621,6 +663,13 @@ export interface Treasury extends BaseContract {
     nameOrSignature: "roleManager"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
+    nameOrSignature: "setBudgetController"
+  ): TypedContractMethod<
+    [_budgetController: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "timelock"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
@@ -676,6 +725,13 @@ export interface Treasury extends BaseContract {
     "view"
   >;
 
+  getEvent(
+    key: "BudgetControllerUpdated"
+  ): TypedContractEvent<
+    BudgetControllerUpdatedEvent.InputTuple,
+    BudgetControllerUpdatedEvent.OutputTuple,
+    BudgetControllerUpdatedEvent.OutputObject
+  >;
   getEvent(
     key: "Deposited"
   ): TypedContractEvent<
@@ -755,6 +811,17 @@ export interface Treasury extends BaseContract {
   >;
 
   filters: {
+    "BudgetControllerUpdated(address)": TypedContractEvent<
+      BudgetControllerUpdatedEvent.InputTuple,
+      BudgetControllerUpdatedEvent.OutputTuple,
+      BudgetControllerUpdatedEvent.OutputObject
+    >;
+    BudgetControllerUpdated: TypedContractEvent<
+      BudgetControllerUpdatedEvent.InputTuple,
+      BudgetControllerUpdatedEvent.OutputTuple,
+      BudgetControllerUpdatedEvent.OutputObject
+    >;
+
     "Deposited(address,uint256)": TypedContractEvent<
       DepositedEvent.InputTuple,
       DepositedEvent.OutputTuple,

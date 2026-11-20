@@ -254,6 +254,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AssetRegistry__factory>;
     getContractFactory(
+      name: "BudgetController",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.BudgetController__factory>;
+    getContractFactory(
       name: "EmergencyPause",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.EmergencyPause__factory>;
@@ -603,6 +607,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.AssetRegistry>;
     getContractAt(
+      name: "BudgetController",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.BudgetController>;
+    getContractAt(
       name: "EmergencyPause",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -904,6 +913,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AssetRegistry>;
     deployContract(
+      name: "BudgetController",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.BudgetController>;
+    deployContract(
       name: "EmergencyPause",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EmergencyPause>;
@@ -1252,6 +1265,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AssetRegistry>;
+    deployContract(
+      name: "BudgetController",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.BudgetController>;
     deployContract(
       name: "EmergencyPause",
       args: any[],
