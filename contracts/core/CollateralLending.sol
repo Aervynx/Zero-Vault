@@ -9,12 +9,14 @@ import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../access/RoleManager.sol";
 import "../security/EmergencyPause.sol";
+import "../interfaces/IERC4907.sol";
 
 /**
  * @title CollateralLending
  * @author ZeroVault Lead Architect
  * @notice Isolated fixed-term installment lending module supporting ETH, whitelisted ERC20,
- *         and Genesis ERC721 NFTs as collateral, with Grace Period + Late Fee + Dual Liquidation.
+ *         and Genesis ERC721/ERC4907 NFTs as collateral, with Grace Period, Late Fee,
+ *         single-tx full repayment, automatic ERC-4907 utility preservation, and Dual Liquidation.
  */
 contract CollateralLending is ReentrancyGuard, ERC721Holder {
     using SafeERC20 for IERC20;
@@ -291,7 +293,7 @@ contract CollateralLending is ReentrancyGuard, ERC721Holder {
     }
 
     /**
-     * @notice Locks a whitelisted Genesis ERC721 NFT as collateral and disburses an installment loan.
+     * @notice Locks a whitelisted Genesis ERC721/ERC4907 NFT as collateral and disburses an installment loan.
      */
     function borrowWithGenesisNFT(
         address nft,
@@ -355,7 +357,35 @@ contract CollateralLending is ReentrancyGuard, ERC721Holder {
             loan.status = LoanStatus.Repaid;
             _releaseCollateral(loan, loan.borrower);
             emit LoanRepaidInFull(loanId, loan.borrower);
+        } else {
+            _syncGenesisNFTUtility(loan, loan.borrower, loan.nextDueTime + loan.gracePeriod);
         }
+    }
+
+    /**
+     * @notice Repays the entire remaining balance in a single transaction and immediately releases collateral.
+     * @dev Intentionally ALLOWED even during EmergencyPause so borrowers can always settle and recover assets.
+     */
+    function repayFull(uint256 loanId) external nonReentrant {
+        Loan storage loan = loans[loanId];
+        if (loan.status != LoanStatus.Active) revert CollateralLending__LoanNotActive();
+
+        uint256 remainingDebt = loan.totalOwed - loan.totalPaid;
+        uint256 lateFee = 0;
+        if (block.timestamp > loan.nextDueTime) {
+            lateFee = (remainingDebt * loan.lateFeeBps) / BPS_DENOMINATOR;
+        }
+
+        loanToken.safeTransferFrom(msg.sender, address(this), remainingDebt + lateFee);
+
+        // CEI: finalize loan state before releasing collateral
+        loan.totalPaid = loan.totalOwed;
+        loan.installmentsPaid = loan.totalInstallments;
+        loan.status = LoanStatus.Repaid;
+
+        emit InstallmentRepaid(loanId, msg.sender, loan.totalInstallments, remainingDebt, lateFee);
+        _releaseCollateral(loan, loan.borrower);
+        emit LoanRepaidInFull(loanId, loan.borrower);
     }
 
     /**
@@ -445,6 +475,8 @@ contract CollateralLending is ReentrancyGuard, ERC721Holder {
             status: LoanStatus.Active
         });
 
+        _syncGenesisNFTUtility(loans[loanId], msg.sender, block.timestamp + interval + cfg.gracePeriod);
+
         loanToken.safeTransfer(msg.sender, principal);
 
         emit LoanCreated(
@@ -467,11 +499,31 @@ contract CollateralLending is ReentrancyGuard, ERC721Holder {
             lockedERC20Collateral[loan.collateralAsset] -= loan.collateralAmountOrId;
             IERC20(loan.collateralAsset).safeTransfer(recipient, loan.collateralAmountOrId);
         } else if (loan.collateralType == CollateralType.ERC721) {
+            _syncGenesisNFTUtility(loan, address(0), 0);
             IERC721(loan.collateralAsset).safeTransferFrom(
                 address(this),
                 recipient,
                 loan.collateralAmountOrId
             );
         }
+    }
+
+    /**
+     * @dev If a locked Genesis NFT supports ERC-4907, automatically keeps utility delegated
+     *      to the borrower while the loan is healthy, and clears/expires it on default or release.
+     */
+    function _syncGenesisNFTUtility(Loan storage loan, address user, uint256 expires) internal {
+        if (loan.collateralType != CollateralType.ERC721) return;
+        try IERC165(loan.collateralAsset).supportsInterface(type(IERC4907).interfaceId) returns (
+            bool is4907
+        ) {
+            if (is4907) {
+                IERC4907(loan.collateralAsset).setUser(
+                    loan.collateralAmountOrId,
+                    user,
+                    uint64(expires)
+                );
+            }
+        } catch {}
     }
 }
