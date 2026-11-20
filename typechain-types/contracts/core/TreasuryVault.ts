@@ -26,22 +26,46 @@ import type {
 export interface TreasuryVaultInterface extends Interface {
   getFunction(
     nameOrSignature:
-      | "CONTROLLER"
+      | "controller"
+      | "controllerInitialized"
+      | "depositERC20"
+      | "depositETH"
+      | "emergencyPause"
       | "getBalance"
       | "getERC20Balance"
+      | "initializeController"
+      | "roleManager"
       | "transferERC20"
       | "transferETH"
   ): FunctionFragment;
 
   getEvent(
     nameOrSignatureOrTopic:
+      | "ControllerInitialized"
+      | "ERC20FundsDeposited"
       | "ERC20FundsWithdrawn"
       | "FundsDeposited"
       | "FundsWithdrawn"
   ): EventFragment;
 
   encodeFunctionData(
-    functionFragment: "CONTROLLER",
+    functionFragment: "controller",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "controllerInitialized",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "depositERC20",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "depositETH",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "emergencyPause",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -53,6 +77,14 @@ export interface TreasuryVaultInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "initializeController",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "roleManager",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferERC20",
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
@@ -61,10 +93,31 @@ export interface TreasuryVaultInterface extends Interface {
     values: [AddressLike, BigNumberish]
   ): string;
 
-  decodeFunctionResult(functionFragment: "CONTROLLER", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "controller", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "controllerInitialized",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "depositERC20",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "depositETH", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "emergencyPause",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getBalance", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getERC20Balance",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "initializeController",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "roleManager",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -75,6 +128,36 @@ export interface TreasuryVaultInterface extends Interface {
     functionFragment: "transferETH",
     data: BytesLike
   ): Result;
+}
+
+export namespace ControllerInitializedEvent {
+  export type InputTuple = [controller: AddressLike];
+  export type OutputTuple = [controller: string];
+  export interface OutputObject {
+    controller: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC20FundsDepositedEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    sender: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [token: string, sender: string, amount: bigint];
+  export interface OutputObject {
+    token: string;
+    sender: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
 
 export namespace ERC20FundsWithdrawnEvent {
@@ -164,11 +247,31 @@ export interface TreasuryVault extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
-  CONTROLLER: TypedContractMethod<[], [string], "view">;
+  controller: TypedContractMethod<[], [string], "view">;
+
+  controllerInitialized: TypedContractMethod<[], [boolean], "view">;
+
+  depositERC20: TypedContractMethod<
+    [_token: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  depositETH: TypedContractMethod<[], [void], "payable">;
+
+  emergencyPause: TypedContractMethod<[], [string], "view">;
 
   getBalance: TypedContractMethod<[], [bigint], "view">;
 
   getERC20Balance: TypedContractMethod<[_token: AddressLike], [bigint], "view">;
+
+  initializeController: TypedContractMethod<
+    [_controller: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  roleManager: TypedContractMethod<[], [string], "view">;
 
   transferERC20: TypedContractMethod<
     [_token: AddressLike, _to: AddressLike, _amount: BigNumberish],
@@ -187,7 +290,23 @@ export interface TreasuryVault extends BaseContract {
   ): T;
 
   getFunction(
-    nameOrSignature: "CONTROLLER"
+    nameOrSignature: "controller"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "controllerInitialized"
+  ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "depositERC20"
+  ): TypedContractMethod<
+    [_token: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositETH"
+  ): TypedContractMethod<[], [void], "payable">;
+  getFunction(
+    nameOrSignature: "emergencyPause"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "getBalance"
@@ -195,6 +314,12 @@ export interface TreasuryVault extends BaseContract {
   getFunction(
     nameOrSignature: "getERC20Balance"
   ): TypedContractMethod<[_token: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "initializeController"
+  ): TypedContractMethod<[_controller: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "roleManager"
+  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "transferERC20"
   ): TypedContractMethod<
@@ -210,6 +335,20 @@ export interface TreasuryVault extends BaseContract {
     "nonpayable"
   >;
 
+  getEvent(
+    key: "ControllerInitialized"
+  ): TypedContractEvent<
+    ControllerInitializedEvent.InputTuple,
+    ControllerInitializedEvent.OutputTuple,
+    ControllerInitializedEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC20FundsDeposited"
+  ): TypedContractEvent<
+    ERC20FundsDepositedEvent.InputTuple,
+    ERC20FundsDepositedEvent.OutputTuple,
+    ERC20FundsDepositedEvent.OutputObject
+  >;
   getEvent(
     key: "ERC20FundsWithdrawn"
   ): TypedContractEvent<
@@ -233,6 +372,28 @@ export interface TreasuryVault extends BaseContract {
   >;
 
   filters: {
+    "ControllerInitialized(address)": TypedContractEvent<
+      ControllerInitializedEvent.InputTuple,
+      ControllerInitializedEvent.OutputTuple,
+      ControllerInitializedEvent.OutputObject
+    >;
+    ControllerInitialized: TypedContractEvent<
+      ControllerInitializedEvent.InputTuple,
+      ControllerInitializedEvent.OutputTuple,
+      ControllerInitializedEvent.OutputObject
+    >;
+
+    "ERC20FundsDeposited(address,address,uint256)": TypedContractEvent<
+      ERC20FundsDepositedEvent.InputTuple,
+      ERC20FundsDepositedEvent.OutputTuple,
+      ERC20FundsDepositedEvent.OutputObject
+    >;
+    ERC20FundsDeposited: TypedContractEvent<
+      ERC20FundsDepositedEvent.InputTuple,
+      ERC20FundsDepositedEvent.OutputTuple,
+      ERC20FundsDepositedEvent.OutputObject
+    >;
+
     "ERC20FundsWithdrawn(address,address,uint256)": TypedContractEvent<
       ERC20FundsWithdrawnEvent.InputTuple,
       ERC20FundsWithdrawnEvent.OutputTuple,
