@@ -3,3 +3,4 @@
 /* eslint-disable */
 export { Treasury__factory } from "./Treasury__factory";
 export { TreasuryVault__factory } from "./TreasuryVault__factory";
+export { TreasuryVesting__factory } from "./TreasuryVesting__factory";

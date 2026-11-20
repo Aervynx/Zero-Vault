@@ -246,6 +246,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.TreasuryVault__factory>;
     getContractFactory(
+      name: "TreasuryVesting",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.TreasuryVesting__factory>;
+    getContractFactory(
       name: "ZeroVaultGovernor",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ZeroVaultGovernor__factory>;
@@ -605,6 +609,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.TreasuryVault>;
     getContractAt(
+      name: "TreasuryVesting",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.TreasuryVesting>;
+    getContractAt(
       name: "ZeroVaultGovernor",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -923,6 +932,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TreasuryVault>;
     deployContract(
+      name: "TreasuryVesting",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.TreasuryVesting>;
+    deployContract(
       name: "ZeroVaultGovernor",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ZeroVaultGovernor>;
@@ -1281,6 +1294,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.TreasuryVault>;
+    deployContract(
+      name: "TreasuryVesting",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.TreasuryVesting>;
     deployContract(
       name: "ZeroVaultGovernor",
       args: any[],

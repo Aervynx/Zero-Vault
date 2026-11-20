@@ -3,3 +3,4 @@
 /* eslint-disable */
 export type { Treasury } from "./Treasury";
 export type { TreasuryVault } from "./TreasuryVault";
+export type { TreasuryVesting } from "./TreasuryVesting";

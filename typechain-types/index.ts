@@ -122,6 +122,8 @@ export type { Treasury } from "./contracts/core/Treasury";
 export { Treasury__factory } from "./factories/contracts/core/Treasury__factory";
 export type { TreasuryVault } from "./contracts/core/TreasuryVault";
 export { TreasuryVault__factory } from "./factories/contracts/core/TreasuryVault__factory";
+export type { TreasuryVesting } from "./contracts/core/TreasuryVesting";
+export { TreasuryVesting__factory } from "./factories/contracts/core/TreasuryVesting__factory";
 export type { ZeroVaultGovernor } from "./contracts/governance/ZeroVaultGovernor";
 export { ZeroVaultGovernor__factory } from "./factories/contracts/governance/ZeroVaultGovernor__factory";
 export type { IERC4907 } from "./contracts/interfaces/IERC4907";
