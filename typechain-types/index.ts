@@ -114,6 +114,10 @@ export type { ZeroVaultGovernor } from "./contracts/governance/ZeroVaultGovernor
 export { ZeroVaultGovernor__factory } from "./factories/contracts/governance/ZeroVaultGovernor__factory";
 export type { EmergencyPause } from "./contracts/security/EmergencyPause";
 export { EmergencyPause__factory } from "./factories/contracts/security/EmergencyPause__factory";
+export type { ReentrancyAttacker } from "./contracts/security/SecurityTestMocks.sol/ReentrancyAttacker";
+export { ReentrancyAttacker__factory } from "./factories/contracts/security/SecurityTestMocks.sol/ReentrancyAttacker__factory";
+export type { RevertingReceiver } from "./contracts/security/SecurityTestMocks.sol/RevertingReceiver";
+export { RevertingReceiver__factory } from "./factories/contracts/security/SecurityTestMocks.sol/RevertingReceiver__factory";
 export type { Timelock } from "./contracts/security/Timelock";
 export { Timelock__factory } from "./factories/contracts/security/Timelock__factory";
 export type { EmergencyPauseMock } from "./contracts/test/EmergencyPauseMock";
