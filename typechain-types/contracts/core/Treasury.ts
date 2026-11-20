@@ -26,45 +26,69 @@ import type {
 export interface TreasuryInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "cancelWithdrawalRequest"
       | "deposit"
-      | "pause"
+      | "depositERC20"
+      | "emergencyPause"
+      | "executeWithdrawal"
+      | "nextRequestId"
       | "paused"
-      | "requireNotPaused"
-      | "requirePaused"
+      | "requestERC20Withdrawal"
+      | "requestETHWithdrawal"
       | "roleManager"
       | "timelock"
-      | "unpause"
       | "vault"
       | "withdraw"
       | "withdrawERC20"
+      | "withdrawalRequests"
   ): FunctionFragment;
 
   getEvent(
     nameOrSignatureOrTopic:
       | "Deposited"
+      | "ERC20Deposited"
       | "ERC20Withdrawn"
-      | "Paused"
-      | "Unpaused"
+      | "WithdrawalCancelled"
+      | "WithdrawalExecuted"
+      | "WithdrawalRequested"
       | "Withdrawn"
   ): EventFragment;
 
-  encodeFunctionData(functionFragment: "deposit", values?: undefined): string;
-  encodeFunctionData(functionFragment: "pause", values?: undefined): string;
-  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "requireNotPaused",
+    functionFragment: "cancelWithdrawalRequest",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(functionFragment: "deposit", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "depositERC20",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "emergencyPause",
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "requirePaused",
+    functionFragment: "executeWithdrawal",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "nextRequestId",
     values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "paused", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "requestERC20Withdrawal",
+    values: [AddressLike, AddressLike, BigNumberish, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "requestETHWithdrawal",
+    values: [AddressLike, BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "roleManager",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
-  encodeFunctionData(functionFragment: "unpause", values?: undefined): string;
   encodeFunctionData(functionFragment: "vault", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "withdraw",
@@ -74,16 +98,39 @@ export interface TreasuryInterface extends Interface {
     functionFragment: "withdrawERC20",
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
+  encodeFunctionData(
+    functionFragment: "withdrawalRequests",
+    values: [BigNumberish]
+  ): string;
 
-  decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
   decodeFunctionResult(
-    functionFragment: "requireNotPaused",
+    functionFragment: "cancelWithdrawalRequest",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "depositERC20",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "requirePaused",
+    functionFragment: "emergencyPause",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "executeWithdrawal",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "nextRequestId",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "requestERC20Withdrawal",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "requestETHWithdrawal",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -91,11 +138,14 @@ export interface TreasuryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "unpause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "vault", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "withdraw", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "withdrawERC20",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "withdrawalRequests",
     data: BytesLike
   ): Result;
 }
@@ -104,6 +154,24 @@ export namespace DepositedEvent {
   export type InputTuple = [sender: AddressLike, amount: BigNumberish];
   export type OutputTuple = [sender: string, amount: bigint];
   export interface OutputObject {
+    sender: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC20DepositedEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    sender: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [token: string, sender: string, amount: bigint];
+  export interface OutputObject {
+    token: string;
     sender: string;
     amount: bigint;
   }
@@ -131,11 +199,12 @@ export namespace ERC20WithdrawnEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace PausedEvent {
-  export type InputTuple = [account: AddressLike];
-  export type OutputTuple = [account: string];
+export namespace WithdrawalCancelledEvent {
+  export type InputTuple = [requestId: BigNumberish, cancelledBy: AddressLike];
+  export type OutputTuple = [requestId: bigint, cancelledBy: string];
   export interface OutputObject {
-    account: string;
+    requestId: bigint;
+    cancelledBy: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -143,11 +212,55 @@ export namespace PausedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
-export namespace UnpausedEvent {
-  export type InputTuple = [account: AddressLike];
-  export type OutputTuple = [account: string];
+export namespace WithdrawalExecutedEvent {
+  export type InputTuple = [
+    requestId: BigNumberish,
+    asset: AddressLike,
+    to: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [
+    requestId: bigint,
+    asset: string,
+    to: string,
+    amount: bigint
+  ];
   export interface OutputObject {
-    account: string;
+    requestId: bigint;
+    asset: string;
+    to: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace WithdrawalRequestedEvent {
+  export type InputTuple = [
+    requestId: BigNumberish,
+    asset: AddressLike,
+    to: AddressLike,
+    amount: BigNumberish,
+    requester: AddressLike,
+    reason: string
+  ];
+  export type OutputTuple = [
+    requestId: bigint,
+    asset: string,
+    to: string,
+    amount: bigint,
+    requester: string,
+    reason: string
+  ];
+  export interface OutputObject {
+    requestId: bigint;
+    asset: string;
+    to: string;
+    amount: bigint;
+    requester: string;
+    reason: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -211,21 +324,52 @@ export interface Treasury extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  cancelWithdrawalRequest: TypedContractMethod<
+    [_requestId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   deposit: TypedContractMethod<[], [void], "payable">;
 
-  pause: TypedContractMethod<[], [void], "nonpayable">;
+  depositERC20: TypedContractMethod<
+    [_token: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  emergencyPause: TypedContractMethod<[], [string], "view">;
+
+  executeWithdrawal: TypedContractMethod<
+    [_requestId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  nextRequestId: TypedContractMethod<[], [bigint], "view">;
 
   paused: TypedContractMethod<[], [boolean], "view">;
 
-  requireNotPaused: TypedContractMethod<[], [void], "view">;
+  requestERC20Withdrawal: TypedContractMethod<
+    [
+      _token: AddressLike,
+      _to: AddressLike,
+      _amount: BigNumberish,
+      _reason: string
+    ],
+    [bigint],
+    "nonpayable"
+  >;
 
-  requirePaused: TypedContractMethod<[], [void], "view">;
+  requestETHWithdrawal: TypedContractMethod<
+    [_to: AddressLike, _amount: BigNumberish, _reason: string],
+    [bigint],
+    "nonpayable"
+  >;
 
   roleManager: TypedContractMethod<[], [string], "view">;
 
   timelock: TypedContractMethod<[], [string], "view">;
-
-  unpause: TypedContractMethod<[], [void], "nonpayable">;
 
   vault: TypedContractMethod<[], [string], "view">;
 
@@ -241,34 +385,75 @@ export interface Treasury extends BaseContract {
     "nonpayable"
   >;
 
+  withdrawalRequests: TypedContractMethod<
+    [arg0: BigNumberish],
+    [
+      [string, string, bigint, string, bigint, bigint] & {
+        asset: string;
+        to: string;
+        amount: bigint;
+        requester: string;
+        createdAt: bigint;
+        status: bigint;
+      }
+    ],
+    "view"
+  >;
+
   getFunction<T extends ContractMethod = ContractMethod>(
     key: string | FunctionFragment
   ): T;
 
   getFunction(
+    nameOrSignature: "cancelWithdrawalRequest"
+  ): TypedContractMethod<[_requestId: BigNumberish], [void], "nonpayable">;
+  getFunction(
     nameOrSignature: "deposit"
   ): TypedContractMethod<[], [void], "payable">;
   getFunction(
-    nameOrSignature: "pause"
-  ): TypedContractMethod<[], [void], "nonpayable">;
+    nameOrSignature: "depositERC20"
+  ): TypedContractMethod<
+    [_token: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "emergencyPause"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "executeWithdrawal"
+  ): TypedContractMethod<[_requestId: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "nextRequestId"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "paused"
   ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
-    nameOrSignature: "requireNotPaused"
-  ): TypedContractMethod<[], [void], "view">;
+    nameOrSignature: "requestERC20Withdrawal"
+  ): TypedContractMethod<
+    [
+      _token: AddressLike,
+      _to: AddressLike,
+      _amount: BigNumberish,
+      _reason: string
+    ],
+    [bigint],
+    "nonpayable"
+  >;
   getFunction(
-    nameOrSignature: "requirePaused"
-  ): TypedContractMethod<[], [void], "view">;
+    nameOrSignature: "requestETHWithdrawal"
+  ): TypedContractMethod<
+    [_to: AddressLike, _amount: BigNumberish, _reason: string],
+    [bigint],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "roleManager"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "timelock"
   ): TypedContractMethod<[], [string], "view">;
-  getFunction(
-    nameOrSignature: "unpause"
-  ): TypedContractMethod<[], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "vault"
   ): TypedContractMethod<[], [string], "view">;
@@ -286,6 +471,22 @@ export interface Treasury extends BaseContract {
     [void],
     "nonpayable"
   >;
+  getFunction(
+    nameOrSignature: "withdrawalRequests"
+  ): TypedContractMethod<
+    [arg0: BigNumberish],
+    [
+      [string, string, bigint, string, bigint, bigint] & {
+        asset: string;
+        to: string;
+        amount: bigint;
+        requester: string;
+        createdAt: bigint;
+        status: bigint;
+      }
+    ],
+    "view"
+  >;
 
   getEvent(
     key: "Deposited"
@@ -295,6 +496,13 @@ export interface Treasury extends BaseContract {
     DepositedEvent.OutputObject
   >;
   getEvent(
+    key: "ERC20Deposited"
+  ): TypedContractEvent<
+    ERC20DepositedEvent.InputTuple,
+    ERC20DepositedEvent.OutputTuple,
+    ERC20DepositedEvent.OutputObject
+  >;
+  getEvent(
     key: "ERC20Withdrawn"
   ): TypedContractEvent<
     ERC20WithdrawnEvent.InputTuple,
@@ -302,18 +510,25 @@ export interface Treasury extends BaseContract {
     ERC20WithdrawnEvent.OutputObject
   >;
   getEvent(
-    key: "Paused"
+    key: "WithdrawalCancelled"
   ): TypedContractEvent<
-    PausedEvent.InputTuple,
-    PausedEvent.OutputTuple,
-    PausedEvent.OutputObject
+    WithdrawalCancelledEvent.InputTuple,
+    WithdrawalCancelledEvent.OutputTuple,
+    WithdrawalCancelledEvent.OutputObject
   >;
   getEvent(
-    key: "Unpaused"
+    key: "WithdrawalExecuted"
   ): TypedContractEvent<
-    UnpausedEvent.InputTuple,
-    UnpausedEvent.OutputTuple,
-    UnpausedEvent.OutputObject
+    WithdrawalExecutedEvent.InputTuple,
+    WithdrawalExecutedEvent.OutputTuple,
+    WithdrawalExecutedEvent.OutputObject
+  >;
+  getEvent(
+    key: "WithdrawalRequested"
+  ): TypedContractEvent<
+    WithdrawalRequestedEvent.InputTuple,
+    WithdrawalRequestedEvent.OutputTuple,
+    WithdrawalRequestedEvent.OutputObject
   >;
   getEvent(
     key: "Withdrawn"
@@ -335,6 +550,17 @@ export interface Treasury extends BaseContract {
       DepositedEvent.OutputObject
     >;
 
+    "ERC20Deposited(address,address,uint256)": TypedContractEvent<
+      ERC20DepositedEvent.InputTuple,
+      ERC20DepositedEvent.OutputTuple,
+      ERC20DepositedEvent.OutputObject
+    >;
+    ERC20Deposited: TypedContractEvent<
+      ERC20DepositedEvent.InputTuple,
+      ERC20DepositedEvent.OutputTuple,
+      ERC20DepositedEvent.OutputObject
+    >;
+
     "ERC20Withdrawn(address,address,uint256)": TypedContractEvent<
       ERC20WithdrawnEvent.InputTuple,
       ERC20WithdrawnEvent.OutputTuple,
@@ -346,26 +572,37 @@ export interface Treasury extends BaseContract {
       ERC20WithdrawnEvent.OutputObject
     >;
 
-    "Paused(address)": TypedContractEvent<
-      PausedEvent.InputTuple,
-      PausedEvent.OutputTuple,
-      PausedEvent.OutputObject
+    "WithdrawalCancelled(uint256,address)": TypedContractEvent<
+      WithdrawalCancelledEvent.InputTuple,
+      WithdrawalCancelledEvent.OutputTuple,
+      WithdrawalCancelledEvent.OutputObject
     >;
-    Paused: TypedContractEvent<
-      PausedEvent.InputTuple,
-      PausedEvent.OutputTuple,
-      PausedEvent.OutputObject
+    WithdrawalCancelled: TypedContractEvent<
+      WithdrawalCancelledEvent.InputTuple,
+      WithdrawalCancelledEvent.OutputTuple,
+      WithdrawalCancelledEvent.OutputObject
     >;
 
-    "Unpaused(address)": TypedContractEvent<
-      UnpausedEvent.InputTuple,
-      UnpausedEvent.OutputTuple,
-      UnpausedEvent.OutputObject
+    "WithdrawalExecuted(uint256,address,address,uint256)": TypedContractEvent<
+      WithdrawalExecutedEvent.InputTuple,
+      WithdrawalExecutedEvent.OutputTuple,
+      WithdrawalExecutedEvent.OutputObject
     >;
-    Unpaused: TypedContractEvent<
-      UnpausedEvent.InputTuple,
-      UnpausedEvent.OutputTuple,
-      UnpausedEvent.OutputObject
+    WithdrawalExecuted: TypedContractEvent<
+      WithdrawalExecutedEvent.InputTuple,
+      WithdrawalExecutedEvent.OutputTuple,
+      WithdrawalExecutedEvent.OutputObject
+    >;
+
+    "WithdrawalRequested(uint256,address,address,uint256,address,string)": TypedContractEvent<
+      WithdrawalRequestedEvent.InputTuple,
+      WithdrawalRequestedEvent.OutputTuple,
+      WithdrawalRequestedEvent.OutputObject
+    >;
+    WithdrawalRequested: TypedContractEvent<
+      WithdrawalRequestedEvent.InputTuple,
+      WithdrawalRequestedEvent.OutputTuple,
+      WithdrawalRequestedEvent.OutputObject
     >;
 
     "Withdrawn(address,uint256)": TypedContractEvent<
