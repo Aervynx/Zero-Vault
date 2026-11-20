@@ -238,6 +238,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RoleManager__factory>;
     getContractFactory(
+      name: "RevenueSplitter",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.RevenueSplitter__factory>;
+    getContractFactory(
       name: "Treasury",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.Treasury__factory>;
@@ -599,6 +603,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.RoleManager>;
     getContractAt(
+      name: "RevenueSplitter",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.RevenueSplitter>;
+    getContractAt(
       name: "Treasury",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -924,6 +933,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.RoleManager>;
     deployContract(
+      name: "RevenueSplitter",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.RevenueSplitter>;
+    deployContract(
       name: "Treasury",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.Treasury>;
@@ -1284,6 +1297,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.RoleManager>;
+    deployContract(
+      name: "RevenueSplitter",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.RevenueSplitter>;
     deployContract(
       name: "Treasury",
       args: any[],

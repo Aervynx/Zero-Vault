@@ -118,6 +118,8 @@ export type { Checkpoints } from "./@openzeppelin/contracts/utils/structs/Checkp
 export { Checkpoints__factory } from "./factories/@openzeppelin/contracts/utils/structs/Checkpoints__factory";
 export type { RoleManager } from "./contracts/access/RoleManager";
 export { RoleManager__factory } from "./factories/contracts/access/RoleManager__factory";
+export type { RevenueSplitter } from "./contracts/core/RevenueSplitter";
+export { RevenueSplitter__factory } from "./factories/contracts/core/RevenueSplitter__factory";
 export type { Treasury } from "./contracts/core/Treasury";
 export { Treasury__factory } from "./factories/contracts/core/Treasury__factory";
 export type { TreasuryVault } from "./contracts/core/TreasuryVault";
