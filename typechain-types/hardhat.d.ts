@@ -106,6 +106,18 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC7913SignatureVerifier__factory>;
     getContractFactory(
+      name: "ERC1155",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC1155__factory>;
+    getContractFactory(
+      name: "IERC1155MetadataURI",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC1155MetadataURI__factory>;
+    getContractFactory(
+      name: "IERC1155",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC1155__factory>;
+    getContractFactory(
       name: "IERC1155Receiver",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IERC1155Receiver__factory>;
@@ -145,6 +157,18 @@ declare module "hardhat/types/runtime" {
       name: "SafeERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SafeERC20__factory>;
+    getContractFactory(
+      name: "ERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ERC721__factory>;
+    getContractFactory(
+      name: "IERC721Metadata",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721Metadata__factory>;
+    getContractFactory(
+      name: "IERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC721__factory>;
     getContractFactory(
       name: "IERC721Receiver",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -226,17 +250,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ZeroVaultGovernor__factory>;
     getContractFactory(
+      name: "AssetRegistry",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.AssetRegistry__factory>;
+    getContractFactory(
       name: "EmergencyPause",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.EmergencyPause__factory>;
-    getContractFactory(
-      name: "ReentrancyAttacker",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ReentrancyAttacker__factory>;
-    getContractFactory(
-      name: "RevertingReceiver",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.RevertingReceiver__factory>;
     getContractFactory(
       name: "Timelock",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -246,9 +266,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.EmergencyPauseMock__factory>;
     getContractFactory(
+      name: "MockERC1155",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockERC1155__factory>;
+    getContractFactory(
       name: "MockERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockERC20__factory>;
+    getContractFactory(
+      name: "MockERC721",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockERC721__factory>;
     getContractFactory(
       name: "MockFeeOnTransferToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -390,6 +418,21 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IERC7913SignatureVerifier>;
     getContractAt(
+      name: "ERC1155",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC1155>;
+    getContractAt(
+      name: "IERC1155MetadataURI",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC1155MetadataURI>;
+    getContractAt(
+      name: "IERC1155",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC1155>;
+    getContractAt(
       name: "IERC1155Receiver",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -439,6 +482,21 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.SafeERC20>;
+    getContractAt(
+      name: "ERC721",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ERC721>;
+    getContractAt(
+      name: "IERC721Metadata",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721Metadata>;
+    getContractAt(
+      name: "IERC721",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC721>;
     getContractAt(
       name: "IERC721Receiver",
       address: string | ethers.Addressable,
@@ -540,20 +598,15 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ZeroVaultGovernor>;
     getContractAt(
+      name: "AssetRegistry",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.AssetRegistry>;
+    getContractAt(
       name: "EmergencyPause",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.EmergencyPause>;
-    getContractAt(
-      name: "ReentrancyAttacker",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ReentrancyAttacker>;
-    getContractAt(
-      name: "RevertingReceiver",
-      address: string | ethers.Addressable,
-      signer?: ethers.Signer
-    ): Promise<Contracts.RevertingReceiver>;
     getContractAt(
       name: "Timelock",
       address: string | ethers.Addressable,
@@ -565,10 +618,20 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.EmergencyPauseMock>;
     getContractAt(
+      name: "MockERC1155",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MockERC1155>;
+    getContractAt(
       name: "MockERC20",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.MockERC20>;
+    getContractAt(
+      name: "MockERC721",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MockERC721>;
     getContractAt(
       name: "MockFeeOnTransferToken",
       address: string | ethers.Addressable,
@@ -693,6 +756,18 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC7913SignatureVerifier>;
     deployContract(
+      name: "ERC1155",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ERC1155>;
+    deployContract(
+      name: "IERC1155MetadataURI",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1155MetadataURI>;
+    deployContract(
+      name: "IERC1155",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1155>;
+    deployContract(
       name: "IERC1155Receiver",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC1155Receiver>;
@@ -732,6 +807,18 @@ declare module "hardhat/types/runtime" {
       name: "SafeERC20",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SafeERC20>;
+    deployContract(
+      name: "ERC721",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ERC721>;
+    deployContract(
+      name: "IERC721Metadata",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC721Metadata>;
+    deployContract(
+      name: "IERC721",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC721>;
     deployContract(
       name: "IERC721Receiver",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -813,17 +900,13 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ZeroVaultGovernor>;
     deployContract(
+      name: "AssetRegistry",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.AssetRegistry>;
+    deployContract(
       name: "EmergencyPause",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EmergencyPause>;
-    deployContract(
-      name: "ReentrancyAttacker",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ReentrancyAttacker>;
-    deployContract(
-      name: "RevertingReceiver",
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.RevertingReceiver>;
     deployContract(
       name: "Timelock",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -833,9 +916,17 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EmergencyPauseMock>;
     deployContract(
+      name: "MockERC1155",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MockERC1155>;
+    deployContract(
       name: "MockERC20",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MockERC20>;
+    deployContract(
+      name: "MockERC721",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MockERC721>;
     deployContract(
       name: "MockFeeOnTransferToken",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -977,6 +1068,21 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IERC7913SignatureVerifier>;
     deployContract(
+      name: "ERC1155",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ERC1155>;
+    deployContract(
+      name: "IERC1155MetadataURI",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1155MetadataURI>;
+    deployContract(
+      name: "IERC1155",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC1155>;
+    deployContract(
       name: "IERC1155Receiver",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1026,6 +1132,21 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.SafeERC20>;
+    deployContract(
+      name: "ERC721",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ERC721>;
+    deployContract(
+      name: "IERC721Metadata",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC721Metadata>;
+    deployContract(
+      name: "IERC721",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC721>;
     deployContract(
       name: "IERC721Receiver",
       args: any[],
@@ -1127,20 +1248,15 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ZeroVaultGovernor>;
     deployContract(
+      name: "AssetRegistry",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.AssetRegistry>;
+    deployContract(
       name: "EmergencyPause",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EmergencyPause>;
-    deployContract(
-      name: "ReentrancyAttacker",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.ReentrancyAttacker>;
-    deployContract(
-      name: "RevertingReceiver",
-      args: any[],
-      signerOrOptions?: ethers.Signer | DeployContractOptions
-    ): Promise<Contracts.RevertingReceiver>;
     deployContract(
       name: "Timelock",
       args: any[],
@@ -1152,10 +1268,20 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EmergencyPauseMock>;
     deployContract(
+      name: "MockERC1155",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MockERC1155>;
+    deployContract(
       name: "MockERC20",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MockERC20>;
+    deployContract(
+      name: "MockERC721",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MockERC721>;
     deployContract(
       name: "MockFeeOnTransferToken",
       args: any[],
