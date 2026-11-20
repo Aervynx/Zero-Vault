@@ -254,6 +254,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockFeeOnTransferToken__factory>;
     getContractFactory(
+      name: "ReentrancyAttacker",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ReentrancyAttacker__factory>;
+    getContractFactory(
+      name: "RevertingReceiver",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.RevertingReceiver__factory>;
+    getContractFactory(
       name: "IRuneToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IRuneToken__factory>;
@@ -567,6 +575,16 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.MockFeeOnTransferToken>;
     getContractAt(
+      name: "ReentrancyAttacker",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ReentrancyAttacker>;
+    getContractAt(
+      name: "RevertingReceiver",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.RevertingReceiver>;
+    getContractAt(
       name: "IRuneToken",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -823,6 +841,14 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MockFeeOnTransferToken>;
     deployContract(
+      name: "ReentrancyAttacker",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ReentrancyAttacker>;
+    deployContract(
+      name: "RevertingReceiver",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.RevertingReceiver>;
+    deployContract(
       name: "IRuneToken",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.IRuneToken>;
@@ -1135,6 +1161,16 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MockFeeOnTransferToken>;
+    deployContract(
+      name: "ReentrancyAttacker",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ReentrancyAttacker>;
+    deployContract(
+      name: "RevertingReceiver",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.RevertingReceiver>;
     deployContract(
       name: "IRuneToken",
       args: any[],

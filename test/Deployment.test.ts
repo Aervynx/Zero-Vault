@@ -52,10 +52,14 @@ describe("ZeroVault Deployment & Post-Deployment Verification", function () {
   });
 
   it("Should fail loudly if invalid zero address or out-of-range delay is provided", async function () {
-    await expect(
-      deployZeroVault({ operator: ethers.ZeroAddress, silent: true })
-    ).to.be.rejectedWith("Post-deployment validation failed");
-
+   let failed = false;
+    try {
+      await deployZeroVault({ operator: ethers.ZeroAddress, silent: true });
+    } catch (err: any) {
+      failed = true;
+      expect(err.message).to.include("Post-deployment validation failed");
+    }
+    expect(failed).to.be.true;
     await expect(
       deployZeroVault({ initialDelay: 60, silent: true })
     ).to.be.revertedWithCustomError(
