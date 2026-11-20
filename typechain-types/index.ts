@@ -118,6 +118,8 @@ export type { Checkpoints } from "./@openzeppelin/contracts/utils/structs/Checkp
 export { Checkpoints__factory } from "./factories/@openzeppelin/contracts/utils/structs/Checkpoints__factory";
 export type { RoleManager } from "./contracts/access/RoleManager";
 export { RoleManager__factory } from "./factories/contracts/access/RoleManager__factory";
+export type { CollateralLending } from "./contracts/core/CollateralLending";
+export { CollateralLending__factory } from "./factories/contracts/core/CollateralLending__factory";
 export type { RevenueSplitter } from "./contracts/core/RevenueSplitter";
 export { RevenueSplitter__factory } from "./factories/contracts/core/RevenueSplitter__factory";
 export type { Treasury } from "./contracts/core/Treasury";
@@ -136,6 +138,8 @@ export type { BudgetController } from "./contracts/security/BudgetController";
 export { BudgetController__factory } from "./factories/contracts/security/BudgetController__factory";
 export type { EmergencyPause } from "./contracts/security/EmergencyPause";
 export { EmergencyPause__factory } from "./factories/contracts/security/EmergencyPause__factory";
+export type { MultiSigGuardian } from "./contracts/security/MultisigGuardian.sol/MultiSigGuardian";
+export { MultiSigGuardian__factory } from "./factories/contracts/security/MultisigGuardian.sol/MultiSigGuardian__factory";
 export type { Timelock } from "./contracts/security/Timelock";
 export { Timelock__factory } from "./factories/contracts/security/Timelock__factory";
 export type { EmergencyPauseMock } from "./contracts/test/EmergencyPauseMock";

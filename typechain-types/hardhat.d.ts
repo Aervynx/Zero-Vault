@@ -238,6 +238,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RoleManager__factory>;
     getContractFactory(
+      name: "CollateralLending",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.CollateralLending__factory>;
+    getContractFactory(
       name: "RevenueSplitter",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.RevenueSplitter__factory>;
@@ -273,6 +277,10 @@ declare module "hardhat/types/runtime" {
       name: "EmergencyPause",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.EmergencyPause__factory>;
+    getContractFactory(
+      name: "MultiSigGuardian",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MultiSigGuardian__factory>;
     getContractFactory(
       name: "Timelock",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -603,6 +611,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.RoleManager>;
     getContractAt(
+      name: "CollateralLending",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.CollateralLending>;
+    getContractAt(
       name: "RevenueSplitter",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -647,6 +660,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.EmergencyPause>;
+    getContractAt(
+      name: "MultiSigGuardian",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MultiSigGuardian>;
     getContractAt(
       name: "Timelock",
       address: string | ethers.Addressable,
@@ -933,6 +951,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.RoleManager>;
     deployContract(
+      name: "CollateralLending",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.CollateralLending>;
+    deployContract(
       name: "RevenueSplitter",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.RevenueSplitter>;
@@ -968,6 +990,10 @@ declare module "hardhat/types/runtime" {
       name: "EmergencyPause",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EmergencyPause>;
+    deployContract(
+      name: "MultiSigGuardian",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MultiSigGuardian>;
     deployContract(
       name: "Timelock",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1298,6 +1324,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.RoleManager>;
     deployContract(
+      name: "CollateralLending",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.CollateralLending>;
+    deployContract(
       name: "RevenueSplitter",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1342,6 +1373,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.EmergencyPause>;
+    deployContract(
+      name: "MultiSigGuardian",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MultiSigGuardian>;
     deployContract(
       name: "Timelock",
       args: any[],
