@@ -3,6 +3,7 @@
 /* eslint-disable */
 import type {
   BaseContract,
+  BigNumberish,
   BytesLike,
   FunctionFragment,
   Result,
@@ -27,11 +28,21 @@ export interface RoleManagerInterface extends Interface {
     nameOrSignature:
       | "BUDGET_MANAGER_ROLE"
       | "DEFAULT_ADMIN_ROLE"
+      | "EXECUTOR_ROLE"
       | "GUARDIAN_ROLE"
       | "OPERATOR_ROLE"
+      | "checkRole"
       | "getRoleAdmin"
+      | "getRoleMember"
+      | "getRoleMemberCount"
+      | "getRoleMembers"
       | "grantRole"
       | "hasRole"
+      | "isAdmin"
+      | "isBudgetManager"
+      | "isExecutor"
+      | "isGuardian"
+      | "isOperator"
       | "renounceRole"
       | "revokeRole"
       | "supportsInterface"
@@ -50,6 +61,10 @@ export interface RoleManagerInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "EXECUTOR_ROLE",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "GUARDIAN_ROLE",
     values?: undefined
   ): string;
@@ -58,7 +73,23 @@ export interface RoleManagerInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "checkRole",
+    values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "getRoleAdmin",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMember",
+    values: [BytesLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMemberCount",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRoleMembers",
     values: [BytesLike]
   ): string;
   encodeFunctionData(
@@ -68,6 +99,26 @@ export interface RoleManagerInterface extends Interface {
   encodeFunctionData(
     functionFragment: "hasRole",
     values: [BytesLike, AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isAdmin",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isBudgetManager",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isExecutor",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isGuardian",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "isOperator",
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "renounceRole",
@@ -91,6 +142,10 @@ export interface RoleManagerInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "EXECUTOR_ROLE",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "GUARDIAN_ROLE",
     data: BytesLike
   ): Result;
@@ -98,12 +153,33 @@ export interface RoleManagerInterface extends Interface {
     functionFragment: "OPERATOR_ROLE",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "checkRole", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getRoleAdmin",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMember",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMemberCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRoleMembers",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "grantRole", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "hasRole", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "isAdmin", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "isBudgetManager",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "isExecutor", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "isGuardian", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "isOperator", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "renounceRole",
     data: BytesLike
@@ -220,11 +296,29 @@ export interface RoleManager extends BaseContract {
 
   DEFAULT_ADMIN_ROLE: TypedContractMethod<[], [string], "view">;
 
+  EXECUTOR_ROLE: TypedContractMethod<[], [string], "view">;
+
   GUARDIAN_ROLE: TypedContractMethod<[], [string], "view">;
 
   OPERATOR_ROLE: TypedContractMethod<[], [string], "view">;
 
+  checkRole: TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "view"
+  >;
+
   getRoleAdmin: TypedContractMethod<[role: BytesLike], [string], "view">;
+
+  getRoleMember: TypedContractMethod<
+    [role: BytesLike, index: BigNumberish],
+    [string],
+    "view"
+  >;
+
+  getRoleMemberCount: TypedContractMethod<[role: BytesLike], [bigint], "view">;
+
+  getRoleMembers: TypedContractMethod<[role: BytesLike], [string[]], "view">;
 
   grantRole: TypedContractMethod<
     [role: BytesLike, account: AddressLike],
@@ -237,6 +331,20 @@ export interface RoleManager extends BaseContract {
     [boolean],
     "view"
   >;
+
+  isAdmin: TypedContractMethod<[account: AddressLike], [boolean], "view">;
+
+  isBudgetManager: TypedContractMethod<
+    [account: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  isExecutor: TypedContractMethod<[account: AddressLike], [boolean], "view">;
+
+  isGuardian: TypedContractMethod<[account: AddressLike], [boolean], "view">;
+
+  isOperator: TypedContractMethod<[account: AddressLike], [boolean], "view">;
 
   renounceRole: TypedContractMethod<
     [role: BytesLike, callerConfirmation: AddressLike],
@@ -267,14 +375,37 @@ export interface RoleManager extends BaseContract {
     nameOrSignature: "DEFAULT_ADMIN_ROLE"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
+    nameOrSignature: "EXECUTOR_ROLE"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "GUARDIAN_ROLE"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "OPERATOR_ROLE"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
+    nameOrSignature: "checkRole"
+  ): TypedContractMethod<
+    [role: BytesLike, account: AddressLike],
+    [void],
+    "view"
+  >;
+  getFunction(
     nameOrSignature: "getRoleAdmin"
   ): TypedContractMethod<[role: BytesLike], [string], "view">;
+  getFunction(
+    nameOrSignature: "getRoleMember"
+  ): TypedContractMethod<
+    [role: BytesLike, index: BigNumberish],
+    [string],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getRoleMemberCount"
+  ): TypedContractMethod<[role: BytesLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getRoleMembers"
+  ): TypedContractMethod<[role: BytesLike], [string[]], "view">;
   getFunction(
     nameOrSignature: "grantRole"
   ): TypedContractMethod<
@@ -289,6 +420,21 @@ export interface RoleManager extends BaseContract {
     [boolean],
     "view"
   >;
+  getFunction(
+    nameOrSignature: "isAdmin"
+  ): TypedContractMethod<[account: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "isBudgetManager"
+  ): TypedContractMethod<[account: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "isExecutor"
+  ): TypedContractMethod<[account: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "isGuardian"
+  ): TypedContractMethod<[account: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "isOperator"
+  ): TypedContractMethod<[account: AddressLike], [boolean], "view">;
   getFunction(
     nameOrSignature: "renounceRole"
   ): TypedContractMethod<

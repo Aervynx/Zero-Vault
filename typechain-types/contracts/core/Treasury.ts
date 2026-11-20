@@ -29,6 +29,8 @@ export interface TreasuryInterface extends Interface {
       | "deposit"
       | "pause"
       | "paused"
+      | "requireNotPaused"
+      | "requirePaused"
       | "roleManager"
       | "timelock"
       | "unpause"
@@ -50,6 +52,14 @@ export interface TreasuryInterface extends Interface {
   encodeFunctionData(functionFragment: "pause", values?: undefined): string;
   encodeFunctionData(functionFragment: "paused", values?: undefined): string;
   encodeFunctionData(
+    functionFragment: "requireNotPaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "requirePaused",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "roleManager",
     values?: undefined
   ): string;
@@ -68,6 +78,14 @@ export interface TreasuryInterface extends Interface {
   decodeFunctionResult(functionFragment: "deposit", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pause", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "paused", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "requireNotPaused",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "requirePaused",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "roleManager",
     data: BytesLike
@@ -199,6 +217,10 @@ export interface Treasury extends BaseContract {
 
   paused: TypedContractMethod<[], [boolean], "view">;
 
+  requireNotPaused: TypedContractMethod<[], [void], "view">;
+
+  requirePaused: TypedContractMethod<[], [void], "view">;
+
   roleManager: TypedContractMethod<[], [string], "view">;
 
   timelock: TypedContractMethod<[], [string], "view">;
@@ -232,6 +254,12 @@ export interface Treasury extends BaseContract {
   getFunction(
     nameOrSignature: "paused"
   ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "requireNotPaused"
+  ): TypedContractMethod<[], [void], "view">;
+  getFunction(
+    nameOrSignature: "requirePaused"
+  ): TypedContractMethod<[], [void], "view">;
   getFunction(
     nameOrSignature: "roleManager"
   ): TypedContractMethod<[], [string], "view">;
