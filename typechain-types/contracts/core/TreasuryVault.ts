@@ -26,28 +26,47 @@ import type {
 export interface TreasuryVaultInterface extends Interface {
   getFunction(
     nameOrSignature:
+      | "assetRegistry"
       | "controller"
       | "controllerInitialized"
+      | "depositERC1155"
       | "depositERC20"
+      | "depositERC721"
       | "depositETH"
       | "emergencyPause"
       | "getBalance"
       | "getERC20Balance"
       | "initializeController"
+      | "onERC1155BatchReceived"
+      | "onERC1155Received"
+      | "onERC721Received"
       | "roleManager"
+      | "setAssetRegistry"
+      | "supportsInterface"
+      | "transferERC1155"
       | "transferERC20"
+      | "transferERC721"
       | "transferETH"
   ): FunctionFragment;
 
   getEvent(
     nameOrSignatureOrTopic:
+      | "AssetRegistryUpdated"
       | "ControllerInitialized"
+      | "ERC1155Deposited"
+      | "ERC1155Withdrawn"
       | "ERC20FundsDeposited"
       | "ERC20FundsWithdrawn"
+      | "ERC721Deposited"
+      | "ERC721Withdrawn"
       | "FundsDeposited"
       | "FundsWithdrawn"
   ): EventFragment;
 
+  encodeFunctionData(
+    functionFragment: "assetRegistry",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "controller",
     values?: undefined
@@ -57,7 +76,15 @@ export interface TreasuryVaultInterface extends Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "depositERC1155",
+    values: [AddressLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "depositERC20",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "depositERC721",
     values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -81,11 +108,45 @@ export interface TreasuryVaultInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "onERC1155BatchReceived",
+    values: [
+      AddressLike,
+      AddressLike,
+      BigNumberish[],
+      BigNumberish[],
+      BytesLike
+    ]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "onERC1155Received",
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "onERC721Received",
+    values: [AddressLike, AddressLike, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "roleManager",
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "setAssetRegistry",
+    values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "supportsInterface",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferERC1155",
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "transferERC20",
+    values: [AddressLike, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "transferERC721",
     values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
@@ -93,13 +154,25 @@ export interface TreasuryVaultInterface extends Interface {
     values: [AddressLike, BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "assetRegistry",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "controller", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "controllerInitialized",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "depositERC1155",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "depositERC20",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "depositERC721",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "depositETH", data: BytesLike): Result;
@@ -117,11 +190,39 @@ export interface TreasuryVaultInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "onERC1155BatchReceived",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "onERC1155Received",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "onERC721Received",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "roleManager",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setAssetRegistry",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "supportsInterface",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferERC1155",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "transferERC20",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "transferERC721",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -130,11 +231,73 @@ export interface TreasuryVaultInterface extends Interface {
   ): Result;
 }
 
+export namespace AssetRegistryUpdatedEvent {
+  export type InputTuple = [registry: AddressLike];
+  export type OutputTuple = [registry: string];
+  export interface OutputObject {
+    registry: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace ControllerInitializedEvent {
   export type InputTuple = [controller: AddressLike];
   export type OutputTuple = [controller: string];
   export interface OutputObject {
     controller: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC1155DepositedEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    sender: AddressLike,
+    id: BigNumberish,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [
+    token: string,
+    sender: string,
+    id: bigint,
+    amount: bigint
+  ];
+  export interface OutputObject {
+    token: string;
+    sender: string;
+    id: bigint;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC1155WithdrawnEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    target: AddressLike,
+    id: BigNumberish,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [
+    token: string,
+    target: string,
+    id: bigint,
+    amount: bigint
+  ];
+  export interface OutputObject {
+    token: string;
+    target: string;
+    id: bigint;
+    amount: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -171,6 +334,42 @@ export namespace ERC20FundsWithdrawnEvent {
     token: string;
     target: string;
     amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC721DepositedEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    sender: AddressLike,
+    tokenId: BigNumberish
+  ];
+  export type OutputTuple = [token: string, sender: string, tokenId: bigint];
+  export interface OutputObject {
+    token: string;
+    sender: string;
+    tokenId: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC721WithdrawnEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    target: AddressLike,
+    tokenId: BigNumberish
+  ];
+  export type OutputTuple = [token: string, target: string, tokenId: bigint];
+  export interface OutputObject {
+    token: string;
+    target: string;
+    tokenId: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -247,12 +446,26 @@ export interface TreasuryVault extends BaseContract {
     event?: TCEvent
   ): Promise<this>;
 
+  assetRegistry: TypedContractMethod<[], [string], "view">;
+
   controller: TypedContractMethod<[], [string], "view">;
 
   controllerInitialized: TypedContractMethod<[], [boolean], "view">;
 
+  depositERC1155: TypedContractMethod<
+    [_token: AddressLike, _id: BigNumberish, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   depositERC20: TypedContractMethod<
     [_token: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  depositERC721: TypedContractMethod<
+    [_token: AddressLike, _tokenId: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -271,10 +484,74 @@ export interface TreasuryVault extends BaseContract {
     "nonpayable"
   >;
 
+  onERC1155BatchReceived: TypedContractMethod<
+    [
+      operator: AddressLike,
+      from: AddressLike,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+
+  onERC1155Received: TypedContractMethod<
+    [
+      operator: AddressLike,
+      from: AddressLike,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+
+  onERC721Received: TypedContractMethod<
+    [
+      operator: AddressLike,
+      from: AddressLike,
+      tokenId: BigNumberish,
+      data: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+
   roleManager: TypedContractMethod<[], [string], "view">;
+
+  setAssetRegistry: TypedContractMethod<
+    [_registry: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  supportsInterface: TypedContractMethod<
+    [interfaceId: BytesLike],
+    [boolean],
+    "view"
+  >;
+
+  transferERC1155: TypedContractMethod<
+    [
+      _token: AddressLike,
+      _to: AddressLike,
+      _id: BigNumberish,
+      _amount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
 
   transferERC20: TypedContractMethod<
     [_token: AddressLike, _to: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  transferERC721: TypedContractMethod<
+    [_token: AddressLike, _to: AddressLike, _tokenId: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -290,15 +567,32 @@ export interface TreasuryVault extends BaseContract {
   ): T;
 
   getFunction(
+    nameOrSignature: "assetRegistry"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
     nameOrSignature: "controller"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "controllerInitialized"
   ): TypedContractMethod<[], [boolean], "view">;
   getFunction(
+    nameOrSignature: "depositERC1155"
+  ): TypedContractMethod<
+    [_token: AddressLike, _id: BigNumberish, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "depositERC20"
   ): TypedContractMethod<
     [_token: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositERC721"
+  ): TypedContractMethod<
+    [_token: AddressLike, _tokenId: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -318,12 +612,75 @@ export interface TreasuryVault extends BaseContract {
     nameOrSignature: "initializeController"
   ): TypedContractMethod<[_controller: AddressLike], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "onERC1155BatchReceived"
+  ): TypedContractMethod<
+    [
+      operator: AddressLike,
+      from: AddressLike,
+      ids: BigNumberish[],
+      values: BigNumberish[],
+      data: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "onERC1155Received"
+  ): TypedContractMethod<
+    [
+      operator: AddressLike,
+      from: AddressLike,
+      id: BigNumberish,
+      value: BigNumberish,
+      data: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "onERC721Received"
+  ): TypedContractMethod<
+    [
+      operator: AddressLike,
+      from: AddressLike,
+      tokenId: BigNumberish,
+      data: BytesLike
+    ],
+    [string],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "roleManager"
   ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "setAssetRegistry"
+  ): TypedContractMethod<[_registry: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "supportsInterface"
+  ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "transferERC1155"
+  ): TypedContractMethod<
+    [
+      _token: AddressLike,
+      _to: AddressLike,
+      _id: BigNumberish,
+      _amount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
   getFunction(
     nameOrSignature: "transferERC20"
   ): TypedContractMethod<
     [_token: AddressLike, _to: AddressLike, _amount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "transferERC721"
+  ): TypedContractMethod<
+    [_token: AddressLike, _to: AddressLike, _tokenId: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -336,11 +693,32 @@ export interface TreasuryVault extends BaseContract {
   >;
 
   getEvent(
+    key: "AssetRegistryUpdated"
+  ): TypedContractEvent<
+    AssetRegistryUpdatedEvent.InputTuple,
+    AssetRegistryUpdatedEvent.OutputTuple,
+    AssetRegistryUpdatedEvent.OutputObject
+  >;
+  getEvent(
     key: "ControllerInitialized"
   ): TypedContractEvent<
     ControllerInitializedEvent.InputTuple,
     ControllerInitializedEvent.OutputTuple,
     ControllerInitializedEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC1155Deposited"
+  ): TypedContractEvent<
+    ERC1155DepositedEvent.InputTuple,
+    ERC1155DepositedEvent.OutputTuple,
+    ERC1155DepositedEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC1155Withdrawn"
+  ): TypedContractEvent<
+    ERC1155WithdrawnEvent.InputTuple,
+    ERC1155WithdrawnEvent.OutputTuple,
+    ERC1155WithdrawnEvent.OutputObject
   >;
   getEvent(
     key: "ERC20FundsDeposited"
@@ -355,6 +733,20 @@ export interface TreasuryVault extends BaseContract {
     ERC20FundsWithdrawnEvent.InputTuple,
     ERC20FundsWithdrawnEvent.OutputTuple,
     ERC20FundsWithdrawnEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC721Deposited"
+  ): TypedContractEvent<
+    ERC721DepositedEvent.InputTuple,
+    ERC721DepositedEvent.OutputTuple,
+    ERC721DepositedEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC721Withdrawn"
+  ): TypedContractEvent<
+    ERC721WithdrawnEvent.InputTuple,
+    ERC721WithdrawnEvent.OutputTuple,
+    ERC721WithdrawnEvent.OutputObject
   >;
   getEvent(
     key: "FundsDeposited"
@@ -372,6 +764,17 @@ export interface TreasuryVault extends BaseContract {
   >;
 
   filters: {
+    "AssetRegistryUpdated(address)": TypedContractEvent<
+      AssetRegistryUpdatedEvent.InputTuple,
+      AssetRegistryUpdatedEvent.OutputTuple,
+      AssetRegistryUpdatedEvent.OutputObject
+    >;
+    AssetRegistryUpdated: TypedContractEvent<
+      AssetRegistryUpdatedEvent.InputTuple,
+      AssetRegistryUpdatedEvent.OutputTuple,
+      AssetRegistryUpdatedEvent.OutputObject
+    >;
+
     "ControllerInitialized(address)": TypedContractEvent<
       ControllerInitializedEvent.InputTuple,
       ControllerInitializedEvent.OutputTuple,
@@ -381,6 +784,28 @@ export interface TreasuryVault extends BaseContract {
       ControllerInitializedEvent.InputTuple,
       ControllerInitializedEvent.OutputTuple,
       ControllerInitializedEvent.OutputObject
+    >;
+
+    "ERC1155Deposited(address,address,uint256,uint256)": TypedContractEvent<
+      ERC1155DepositedEvent.InputTuple,
+      ERC1155DepositedEvent.OutputTuple,
+      ERC1155DepositedEvent.OutputObject
+    >;
+    ERC1155Deposited: TypedContractEvent<
+      ERC1155DepositedEvent.InputTuple,
+      ERC1155DepositedEvent.OutputTuple,
+      ERC1155DepositedEvent.OutputObject
+    >;
+
+    "ERC1155Withdrawn(address,address,uint256,uint256)": TypedContractEvent<
+      ERC1155WithdrawnEvent.InputTuple,
+      ERC1155WithdrawnEvent.OutputTuple,
+      ERC1155WithdrawnEvent.OutputObject
+    >;
+    ERC1155Withdrawn: TypedContractEvent<
+      ERC1155WithdrawnEvent.InputTuple,
+      ERC1155WithdrawnEvent.OutputTuple,
+      ERC1155WithdrawnEvent.OutputObject
     >;
 
     "ERC20FundsDeposited(address,address,uint256)": TypedContractEvent<
@@ -403,6 +828,28 @@ export interface TreasuryVault extends BaseContract {
       ERC20FundsWithdrawnEvent.InputTuple,
       ERC20FundsWithdrawnEvent.OutputTuple,
       ERC20FundsWithdrawnEvent.OutputObject
+    >;
+
+    "ERC721Deposited(address,address,uint256)": TypedContractEvent<
+      ERC721DepositedEvent.InputTuple,
+      ERC721DepositedEvent.OutputTuple,
+      ERC721DepositedEvent.OutputObject
+    >;
+    ERC721Deposited: TypedContractEvent<
+      ERC721DepositedEvent.InputTuple,
+      ERC721DepositedEvent.OutputTuple,
+      ERC721DepositedEvent.OutputObject
+    >;
+
+    "ERC721Withdrawn(address,address,uint256)": TypedContractEvent<
+      ERC721WithdrawnEvent.InputTuple,
+      ERC721WithdrawnEvent.OutputTuple,
+      ERC721WithdrawnEvent.OutputObject
+    >;
+    ERC721Withdrawn: TypedContractEvent<
+      ERC721WithdrawnEvent.InputTuple,
+      ERC721WithdrawnEvent.OutputTuple,
+      ERC721WithdrawnEvent.OutputObject
     >;
 
     "FundsDeposited(address,uint256)": TypedContractEvent<

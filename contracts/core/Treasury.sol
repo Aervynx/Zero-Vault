@@ -3,17 +3,18 @@ pragma solidity 0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "../access/RoleManager.sol";
 import "../security/EmergencyPause.sol";
+import "../security/AssetRegistry.sol";
 import "./TreasuryVault.sol";
 
 /**
  * @title Treasury
  * @author ZeroVault Lead Architect
- * @notice Main orchestration and policy-enforcement layer for ZeroVault.
- * @dev Coordinates ETH/ERC20 deposits, withdrawal request lifecycle, shared pause checks,
- *      timelock-gated execution, and controlled interaction with TreasuryVault.
+ * @notice Main orchestration and policy-enforcement layer for ZeroVault multi-asset custody.
  */
 contract Treasury is ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -26,7 +27,7 @@ contract Treasury is ReentrancyGuard {
     }
 
     struct WithdrawalRequest {
-        address asset; // address(0) for native ETH, token address for ERC20
+        address asset; // address(0) for native ETH, token address for ERC20/RWA
         address to;
         uint256 amount;
         address requester;
@@ -44,6 +45,8 @@ contract Treasury is ReentrancyGuard {
 
     event Deposited(address indexed sender, uint256 amount);
     event ERC20Deposited(address indexed token, address indexed sender, uint256 amount);
+    event ERC721Deposited(address indexed token, address indexed sender, uint256 indexed tokenId);
+    event ERC1155Deposited(address indexed token, address indexed sender, uint256 indexed id, uint256 amount);
     event WithdrawalRequested(
         uint256 indexed requestId,
         address indexed asset,
@@ -61,6 +64,8 @@ contract Treasury is ReentrancyGuard {
     event WithdrawalCancelled(uint256 indexed requestId, address indexed cancelledBy);
     event Withdrawn(address indexed target, uint256 amount);
     event ERC20Withdrawn(address indexed token, address indexed target, uint256 amount);
+    event ERC721Withdrawn(address indexed token, address indexed target, uint256 indexed tokenId);
+    event ERC1155Withdrawn(address indexed token, address indexed target, uint256 indexed id, uint256 amount);
 
     error Treasury__Unauthorized();
     error Treasury__InvalidTimelock();
@@ -104,9 +109,6 @@ contract Treasury is ReentrancyGuard {
         return emergencyPause.paused();
     }
 
-    /**
-     * @notice Explicit ETH deposit entry point. Forwards funds directly to TreasuryVault.
-     */
     function deposit() external payable nonReentrant {
         if (msg.value == 0) revert Treasury__ZeroDeposit();
         (bool success, ) = payable(address(vault)).call{value: msg.value}("");
@@ -114,12 +116,14 @@ contract Treasury is ReentrancyGuard {
         emit Deposited(msg.sender, msg.value);
     }
 
-    /**
-     * @notice Permissionless ERC20 deposit into TreasuryVault. Rejects fee-on-transfer tokens.
-     */
     function depositERC20(address _token, uint256 _amount) external nonReentrant {
         if (_token == address(0)) revert Treasury__ZeroAddress();
         if (_amount == 0) revert Treasury__ZeroDeposit();
+
+        AssetRegistry registry = vault.assetRegistry();
+        if (address(registry) != address(0)) {
+            registry.validateDeposit(_token, AssetRegistry.AssetType.ERC20);
+        }
 
         uint256 balanceBefore = IERC20(_token).balanceOf(address(vault));
         IERC20(_token).safeTransferFrom(msg.sender, address(vault), _amount);
@@ -129,9 +133,21 @@ contract Treasury is ReentrancyGuard {
         emit ERC20Deposited(_token, msg.sender, _amount);
     }
 
-    /**
-     * @notice Registers a pending ETH withdrawal request to be queued and executed via Timelock.
-     */
+    function depositERC721(address _token, uint256 _tokenId) external nonReentrant {
+        if (_token == address(0)) revert Treasury__ZeroAddress();
+        // Triggers TreasuryVault.onERC721Received which enforces AssetRegistry vetting
+        IERC721(_token).safeTransferFrom(msg.sender, address(vault), _tokenId);
+        emit ERC721Deposited(_token, msg.sender, _tokenId);
+    }
+
+    function depositERC1155(address _token, uint256 _id, uint256 _amount) external nonReentrant {
+        if (_token == address(0)) revert Treasury__ZeroAddress();
+        if (_amount == 0) revert Treasury__ZeroAmount();
+        // Triggers TreasuryVault.onERC1155Received which enforces AssetRegistry vetting
+        IERC1155(_token).safeTransferFrom(msg.sender, address(vault), _id, _amount, "");
+        emit ERC1155Deposited(_token, msg.sender, _id, _amount);
+    }
+
     function requestETHWithdrawal(
         address _to,
         uint256 _amount,
@@ -145,9 +161,6 @@ contract Treasury is ReentrancyGuard {
         requestId = _registerRequest(address(0), _to, _amount, _reason);
     }
 
-    /**
-     * @notice Registers a pending ERC20 withdrawal request to be queued and executed via Timelock.
-     */
     function requestERC20Withdrawal(
         address _token,
         address _to,
@@ -159,12 +172,14 @@ contract Treasury is ReentrancyGuard {
         if (_amount == 0) revert Treasury__ZeroAmount();
         if (vault.getERC20Balance(_token) < _amount) revert Treasury__InsufficientBalance();
 
+        AssetRegistry registry = vault.assetRegistry();
+        if (address(registry) != address(0)) {
+            registry.validateWithdrawal(_token, AssetRegistry.AssetType.ERC20, _amount);
+        }
+
         requestId = _registerRequest(_token, _to, _amount, _reason);
     }
 
-    /**
-     * @notice Cancels a pending withdrawal request. Callable by GUARDIAN_ROLE or DEFAULT_ADMIN_ROLE even while paused.
-     */
     function cancelWithdrawalRequest(uint256 _requestId) external {
         if (!roleManager.isGuardian(msg.sender) && !roleManager.isAdmin(msg.sender)) {
             revert Treasury__Unauthorized();
@@ -178,15 +193,11 @@ contract Treasury is ReentrancyGuard {
         emit WithdrawalCancelled(_requestId, msg.sender);
     }
 
-    /**
-     * @notice Executes a previously registered withdrawal request. Callable strictly by Timelock while unpaused.
-     */
     function executeWithdrawal(uint256 _requestId) external onlyTimelock whenNotPaused nonReentrant {
         WithdrawalRequest storage req = withdrawalRequests[_requestId];
         if (req.status == RequestStatus.None) revert Treasury__RequestNotFound();
         if (req.status != RequestStatus.Pending) revert Treasury__InvalidRequestState(req.status);
 
-        // Checks-Effects-Interactions: mark executed before external vault transfer
         req.status = RequestStatus.Executed;
 
         if (req.asset == address(0)) {
@@ -200,9 +211,6 @@ contract Treasury is ReentrancyGuard {
         emit WithdrawalExecuted(_requestId, req.asset, req.to, req.amount);
     }
 
-    /**
-     * @notice Direct Timelock-gated ETH withdrawal (also used by Governance TimelockController).
-     */
     function withdraw(
         address payable _to,
         uint256 _amount
@@ -213,9 +221,6 @@ contract Treasury is ReentrancyGuard {
         emit Withdrawn(_to, _amount);
     }
 
-    /**
-     * @notice Direct Timelock-gated ERC20 withdrawal (also used by Governance TimelockController).
-     */
     function withdrawERC20(
         address _token,
         address _to,
@@ -227,9 +232,28 @@ contract Treasury is ReentrancyGuard {
         emit ERC20Withdrawn(_token, _to, _amount);
     }
 
-    /**
-     * @notice Accepts direct ETH transfers and forwards them to TreasuryVault.
-     */
+    function withdrawERC721(
+        address _token,
+        address _to,
+        uint256 _tokenId
+    ) external onlyTimelock whenNotPaused nonReentrant {
+        if (_token == address(0) || _to == address(0)) revert Treasury__ZeroAddress();
+        vault.transferERC721(_token, _to, _tokenId);
+        emit ERC721Withdrawn(_token, _to, _tokenId);
+    }
+
+    function withdrawERC1155(
+        address _token,
+        address _to,
+        uint256 _id,
+        uint256 _amount
+    ) external onlyTimelock whenNotPaused nonReentrant {
+        if (_token == address(0) || _to == address(0)) revert Treasury__ZeroAddress();
+        if (_amount == 0) revert Treasury__ZeroAmount();
+        vault.transferERC1155(_token, _to, _id, _amount);
+        emit ERC1155Withdrawn(_token, _to, _id, _amount);
+    }
+
     receive() external payable nonReentrant {
         if (msg.value > 0) {
             (bool success, ) = payable(address(vault)).call{value: msg.value}("");
