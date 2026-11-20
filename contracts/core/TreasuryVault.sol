@@ -8,6 +8,7 @@ import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
 import "@openzeppelin/contracts/token/ERC1155/IERC1155.sol";
 import "@openzeppelin/contracts/token/ERC1155/utils/ERC1155Holder.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "../interfaces/IERC4907.sol";
 import "../access/RoleManager.sol";
 import "../security/EmergencyPause.sol";
 import "../security/AssetRegistry.sol";
@@ -38,6 +39,7 @@ contract TreasuryVault is ReentrancyGuard, ERC721Holder, ERC1155Holder {
     event ERC20FundsWithdrawn(address indexed token, address indexed target, uint256 amount);
     event ERC721Withdrawn(address indexed token, address indexed target, uint256 indexed tokenId);
     event ERC1155Withdrawn(address indexed token, address indexed target, uint256 indexed id, uint256 amount);
+    event ERC4907UserUpdated(address indexed token,uint256 indexed tokenId,address indexed user,uint64 expires);
 
     error TreasuryVault__ZeroAddress();
     error TreasuryVault__ZeroAmount();
@@ -47,6 +49,8 @@ contract TreasuryVault is ReentrancyGuard, ERC721Holder, ERC1155Holder {
     error TreasuryVault__InsufficientBalance();
     error TreasuryVault__TransferFailed();
     error TreasuryVault__FeeOnTransferNotSupported();
+    error TreasuryVault__NotTokenOwner();
+    error TreasuryVault__InvalidExpiration();
 
     modifier onlyController() {
         if (!controllerInitialized) revert TreasuryVault__ControllerNotSet();
@@ -196,6 +200,32 @@ contract TreasuryVault is ReentrancyGuard, ERC721Holder, ERC1155Holder {
 
         IERC1155(_token).safeTransferFrom(address(this), _to, _id, _amount, "");
         emit ERC1155Withdrawn(_token, _to, _id, _amount);
+    }
+    /**
+     * @notice Grants or revokes temporary ERC-4907 usage rights while Vault retains NFT ownership.
+     * @dev Callable strictly by Treasury. Revoking (_user == address(0)) is permitted even while paused.
+     */
+    function setERC4907User(
+        address _token,
+        uint256 _tokenId,
+        address _user,
+        uint64 _expires
+    ) external onlyController nonReentrant {
+        if (_token == address(0)) revert TreasuryVault__ZeroAddress();
+        if (IERC721(_token).ownerOf(_tokenId) != address(this)) {
+            revert TreasuryVault__NotTokenOwner();
+        }
+
+        if (_user != address(0)) {
+            emergencyPause.requireNotPaused();
+            if (_expires <= block.timestamp) revert TreasuryVault__InvalidExpiration();
+            if (address(assetRegistry) != address(0)) {
+                assetRegistry.validateWithdrawal(_token, AssetRegistry.AssetType.ERC721, 1);
+            }
+        }
+
+        IERC4907(_token).setUser(_tokenId, _user, _expires);
+        emit ERC4907UserUpdated(_token, _tokenId, _user, _expires);
     }
 
     /**

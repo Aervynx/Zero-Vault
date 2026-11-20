@@ -38,8 +38,10 @@ export interface TreasuryInterface extends Interface {
       | "paused"
       | "requestERC20Withdrawal"
       | "requestETHWithdrawal"
+      | "revokeERC4907User"
       | "roleManager"
       | "setBudgetController"
+      | "setERC4907User"
       | "timelock"
       | "vault"
       | "withdraw"
@@ -57,6 +59,8 @@ export interface TreasuryInterface extends Interface {
       | "ERC1155Withdrawn"
       | "ERC20Deposited"
       | "ERC20Withdrawn"
+      | "ERC4907UserRevoked"
+      | "ERC4907UserSet"
       | "ERC721Deposited"
       | "ERC721Withdrawn"
       | "WithdrawalCancelled"
@@ -108,12 +112,20 @@ export interface TreasuryInterface extends Interface {
     values: [AddressLike, BigNumberish, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "revokeERC4907User",
+    values: [AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "roleManager",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "setBudgetController",
     values: [AddressLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setERC4907User",
+    values: [AddressLike, BigNumberish, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "timelock", values?: undefined): string;
   encodeFunctionData(functionFragment: "vault", values?: undefined): string;
@@ -181,11 +193,19 @@ export interface TreasuryInterface extends Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "revokeERC4907User",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "roleManager",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
     functionFragment: "setBudgetController",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setERC4907User",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "timelock", data: BytesLike): Result;
@@ -313,6 +333,49 @@ export namespace ERC20WithdrawnEvent {
     token: string;
     target: string;
     amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC4907UserRevokedEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    tokenId: BigNumberish,
+    revokedBy: AddressLike
+  ];
+  export type OutputTuple = [token: string, tokenId: bigint, revokedBy: string];
+  export interface OutputObject {
+    token: string;
+    tokenId: bigint;
+    revokedBy: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC4907UserSetEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    tokenId: BigNumberish,
+    user: AddressLike,
+    expires: BigNumberish
+  ];
+  export type OutputTuple = [
+    token: string,
+    tokenId: bigint,
+    user: string,
+    expires: bigint
+  ];
+  export interface OutputObject {
+    token: string;
+    tokenId: bigint;
+    user: string;
+    expires: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -538,10 +601,27 @@ export interface Treasury extends BaseContract {
     "nonpayable"
   >;
 
+  revokeERC4907User: TypedContractMethod<
+    [_token: AddressLike, _tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
   roleManager: TypedContractMethod<[], [string], "view">;
 
   setBudgetController: TypedContractMethod<
     [_budgetController: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  setERC4907User: TypedContractMethod<
+    [
+      _token: AddressLike,
+      _tokenId: BigNumberish,
+      _user: AddressLike,
+      _expires: BigNumberish
+    ],
     [void],
     "nonpayable"
   >;
@@ -660,12 +740,31 @@ export interface Treasury extends BaseContract {
     "nonpayable"
   >;
   getFunction(
+    nameOrSignature: "revokeERC4907User"
+  ): TypedContractMethod<
+    [_token: AddressLike, _tokenId: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "roleManager"
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "setBudgetController"
   ): TypedContractMethod<
     [_budgetController: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setERC4907User"
+  ): TypedContractMethod<
+    [
+      _token: AddressLike,
+      _tokenId: BigNumberish,
+      _user: AddressLike,
+      _expires: BigNumberish
+    ],
     [void],
     "nonpayable"
   >;
@@ -766,6 +865,20 @@ export interface Treasury extends BaseContract {
     ERC20WithdrawnEvent.InputTuple,
     ERC20WithdrawnEvent.OutputTuple,
     ERC20WithdrawnEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC4907UserRevoked"
+  ): TypedContractEvent<
+    ERC4907UserRevokedEvent.InputTuple,
+    ERC4907UserRevokedEvent.OutputTuple,
+    ERC4907UserRevokedEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC4907UserSet"
+  ): TypedContractEvent<
+    ERC4907UserSetEvent.InputTuple,
+    ERC4907UserSetEvent.OutputTuple,
+    ERC4907UserSetEvent.OutputObject
   >;
   getEvent(
     key: "ERC721Deposited"
@@ -875,6 +988,28 @@ export interface Treasury extends BaseContract {
       ERC20WithdrawnEvent.InputTuple,
       ERC20WithdrawnEvent.OutputTuple,
       ERC20WithdrawnEvent.OutputObject
+    >;
+
+    "ERC4907UserRevoked(address,uint256,address)": TypedContractEvent<
+      ERC4907UserRevokedEvent.InputTuple,
+      ERC4907UserRevokedEvent.OutputTuple,
+      ERC4907UserRevokedEvent.OutputObject
+    >;
+    ERC4907UserRevoked: TypedContractEvent<
+      ERC4907UserRevokedEvent.InputTuple,
+      ERC4907UserRevokedEvent.OutputTuple,
+      ERC4907UserRevokedEvent.OutputObject
+    >;
+
+    "ERC4907UserSet(address,uint256,address,uint64)": TypedContractEvent<
+      ERC4907UserSetEvent.InputTuple,
+      ERC4907UserSetEvent.OutputTuple,
+      ERC4907UserSetEvent.OutputObject
+    >;
+    ERC4907UserSet: TypedContractEvent<
+      ERC4907UserSetEvent.InputTuple,
+      ERC4907UserSetEvent.OutputTuple,
+      ERC4907UserSetEvent.OutputObject
     >;
 
     "ERC721Deposited(address,address,uint256)": TypedContractEvent<

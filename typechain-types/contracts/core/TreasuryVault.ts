@@ -42,6 +42,7 @@ export interface TreasuryVaultInterface extends Interface {
       | "onERC721Received"
       | "roleManager"
       | "setAssetRegistry"
+      | "setERC4907User"
       | "supportsInterface"
       | "transferERC1155"
       | "transferERC20"
@@ -57,6 +58,7 @@ export interface TreasuryVaultInterface extends Interface {
       | "ERC1155Withdrawn"
       | "ERC20FundsDeposited"
       | "ERC20FundsWithdrawn"
+      | "ERC4907UserUpdated"
       | "ERC721Deposited"
       | "ERC721Withdrawn"
       | "FundsDeposited"
@@ -134,6 +136,10 @@ export interface TreasuryVaultInterface extends Interface {
     values: [AddressLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "setERC4907User",
+    values: [AddressLike, BigNumberish, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
     functionFragment: "supportsInterface",
     values: [BytesLike]
   ): string;
@@ -207,6 +213,10 @@ export interface TreasuryVaultInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "setAssetRegistry",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "setERC4907User",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -334,6 +344,31 @@ export namespace ERC20FundsWithdrawnEvent {
     token: string;
     target: string;
     amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
+export namespace ERC4907UserUpdatedEvent {
+  export type InputTuple = [
+    token: AddressLike,
+    tokenId: BigNumberish,
+    user: AddressLike,
+    expires: BigNumberish
+  ];
+  export type OutputTuple = [
+    token: string,
+    tokenId: bigint,
+    user: string,
+    expires: bigint
+  ];
+  export interface OutputObject {
+    token: string;
+    tokenId: bigint;
+    user: string;
+    expires: bigint;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -527,6 +562,17 @@ export interface TreasuryVault extends BaseContract {
     "nonpayable"
   >;
 
+  setERC4907User: TypedContractMethod<
+    [
+      _token: AddressLike,
+      _tokenId: BigNumberish,
+      _user: AddressLike,
+      _expires: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
   supportsInterface: TypedContractMethod<
     [interfaceId: BytesLike],
     [boolean],
@@ -656,6 +702,18 @@ export interface TreasuryVault extends BaseContract {
     nameOrSignature: "setAssetRegistry"
   ): TypedContractMethod<[_registry: AddressLike], [void], "nonpayable">;
   getFunction(
+    nameOrSignature: "setERC4907User"
+  ): TypedContractMethod<
+    [
+      _token: AddressLike,
+      _tokenId: BigNumberish,
+      _user: AddressLike,
+      _expires: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
     nameOrSignature: "supportsInterface"
   ): TypedContractMethod<[interfaceId: BytesLike], [boolean], "view">;
   getFunction(
@@ -733,6 +791,13 @@ export interface TreasuryVault extends BaseContract {
     ERC20FundsWithdrawnEvent.InputTuple,
     ERC20FundsWithdrawnEvent.OutputTuple,
     ERC20FundsWithdrawnEvent.OutputObject
+  >;
+  getEvent(
+    key: "ERC4907UserUpdated"
+  ): TypedContractEvent<
+    ERC4907UserUpdatedEvent.InputTuple,
+    ERC4907UserUpdatedEvent.OutputTuple,
+    ERC4907UserUpdatedEvent.OutputObject
   >;
   getEvent(
     key: "ERC721Deposited"
@@ -828,6 +893,17 @@ export interface TreasuryVault extends BaseContract {
       ERC20FundsWithdrawnEvent.InputTuple,
       ERC20FundsWithdrawnEvent.OutputTuple,
       ERC20FundsWithdrawnEvent.OutputObject
+    >;
+
+    "ERC4907UserUpdated(address,uint256,address,uint64)": TypedContractEvent<
+      ERC4907UserUpdatedEvent.InputTuple,
+      ERC4907UserUpdatedEvent.OutputTuple,
+      ERC4907UserUpdatedEvent.OutputObject
+    >;
+    ERC4907UserUpdated: TypedContractEvent<
+      ERC4907UserUpdatedEvent.InputTuple,
+      ERC4907UserUpdatedEvent.OutputTuple,
+      ERC4907UserUpdatedEvent.OutputObject
     >;
 
     "ERC721Deposited(address,address,uint256)": TypedContractEvent<

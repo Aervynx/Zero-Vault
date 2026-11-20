@@ -250,6 +250,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ZeroVaultGovernor__factory>;
     getContractFactory(
+      name: "IERC4907",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC4907__factory>;
+    getContractFactory(
       name: "AssetRegistry",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AssetRegistry__factory>;
@@ -277,6 +281,10 @@ declare module "hardhat/types/runtime" {
       name: "MockERC20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MockERC20__factory>;
+    getContractFactory(
+      name: "MockERC4907",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.MockERC4907__factory>;
     getContractFactory(
       name: "MockERC721",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -602,6 +610,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.ZeroVaultGovernor>;
     getContractAt(
+      name: "IERC4907",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC4907>;
+    getContractAt(
       name: "AssetRegistry",
       address: string | ethers.Addressable,
       signer?: ethers.Signer
@@ -636,6 +649,11 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.MockERC20>;
+    getContractAt(
+      name: "MockERC4907",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.MockERC4907>;
     getContractAt(
       name: "MockERC721",
       address: string | ethers.Addressable,
@@ -909,6 +927,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ZeroVaultGovernor>;
     deployContract(
+      name: "IERC4907",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC4907>;
+    deployContract(
       name: "AssetRegistry",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AssetRegistry>;
@@ -936,6 +958,10 @@ declare module "hardhat/types/runtime" {
       name: "MockERC20",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MockERC20>;
+    deployContract(
+      name: "MockERC4907",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MockERC4907>;
     deployContract(
       name: "MockERC721",
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1261,6 +1287,11 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.ZeroVaultGovernor>;
     deployContract(
+      name: "IERC4907",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IERC4907>;
+    deployContract(
       name: "AssetRegistry",
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
@@ -1295,6 +1326,11 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.MockERC20>;
+    deployContract(
+      name: "MockERC4907",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.MockERC4907>;
     deployContract(
       name: "MockERC721",
       args: any[],

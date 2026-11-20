@@ -4,6 +4,7 @@
 export * as access from "./access";
 export * as core from "./core";
 export * as governance from "./governance";
+export * as interfaces from "./interfaces";
 export * as security from "./security";
 export * as test from "./test";
 export * as token from "./token";

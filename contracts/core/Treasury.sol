@@ -71,6 +71,18 @@ contract Treasury is ReentrancyGuard {
     event ERC721Withdrawn(address indexed token, address indexed target, uint256 indexed tokenId);
     event ERC1155Withdrawn(address indexed token, address indexed target, uint256 indexed id, uint256 amount);
 
+    event ERC4907UserSet(
+        address indexed token,
+        uint256 indexed tokenId,
+        address indexed user,
+        uint64 expires
+    );
+    event ERC4907UserRevoked(
+        address indexed token,
+        uint256 indexed tokenId,
+        address indexed revokedBy
+    );
+
     error Treasury__Unauthorized();
     error Treasury__InvalidTimelock();
     error Treasury__ZeroDeposit();
@@ -280,6 +292,34 @@ contract Treasury is ReentrancyGuard {
         vault.transferERC1155(_token, _to, _id, _amount);
         emit ERC1155Withdrawn(_token, _to, _id, _amount);
     }
+
+    /**
+     * @notice Grants temporary ERC-4907 rental rights via Timelock while keeping NFT ownership in Vault.
+     */
+    function setERC4907User(
+        address _token,
+        uint256 _tokenId,
+        address _user,
+        uint64 _expires
+    ) external onlyTimelock whenNotPaused nonReentrant {
+        if (_token == address(0) || _user == address(0)) revert Treasury__ZeroAddress();
+        vault.setERC4907User(_token, _tokenId, _user, _expires);
+        emit ERC4907UserSet(_token, _tokenId, _user, _expires);
+    }
+
+    /**
+     * @notice Emergency revocation of an active ERC-4907 renter. Callable by GUARDIAN_ROLE or DEFAULT_ADMIN_ROLE even while paused.
+     */
+    function revokeERC4907User(address _token, uint256 _tokenId) external nonReentrant {
+        if (!roleManager.isGuardian(msg.sender) && !roleManager.isAdmin(msg.sender)) {
+            revert Treasury__Unauthorized();
+        }
+        if (_token == address(0)) revert Treasury__ZeroAddress();
+
+        vault.setERC4907User(_token, _tokenId, address(0), 0);
+        emit ERC4907UserRevoked(_token, _tokenId, msg.sender);
+    }
+
 
     receive() external payable nonReentrant {
         if (msg.value > 0) {
